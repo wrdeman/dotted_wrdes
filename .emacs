@@ -11,6 +11,14 @@
 (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
 (el-get 'sync)
 
+; list all packages you want installed  
+(setq my-el-get-packages  
+      (append  
+       '(auto-complete pymacs fill-column-indicator jedi python-pep8 flycheck python-django)  
+       (mapcar 'el-get-source-name el-get-sources)))  
+  
+(el-get 'sync my-el-get-packages)  
+
 (require 'ido)
 (ido-mode t)
 
