@@ -1,10 +1,16 @@
-;; sudo pip install flake8
+;;(setq debug-on-error t)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                    Extra pyhton requirements                              ;;
+;;                    sudo pip install flake8                                ;;
+;;                    sudo pip install ropemacs                              ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; set path for flake8
 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin"))
 (setq exec-path (append exec-path '("/usr/local/bin")))
 
+;; set up el-get
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-
 (unless (require 'el-get nil 'noerror)
   (with-current-buffer
       (url-retrieve-synchronously
@@ -23,9 +29,12 @@
 
 (el-get 'sync my-el-get-packages)
 
+;; interactive mode
 (require 'ido)
 (ido-mode t)
 
+
+;; autocomplete
 (add-to-list 'load-path "~/.emacs.d/el-get/auto-complete")
 (require 'auto-complete)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
@@ -33,7 +42,7 @@
 (ac-config-default)
 (global-auto-complete-mode t)
 
-; pymacs
+;; pymacs
 (add-to-list 'load-path "~/.emacs.d/el-get/pymacs")
 (autoload 'pymacs-apply "pymacs")
 (autoload 'pymacs-call "pymacs")
@@ -42,10 +51,38 @@
 (autoload 'pymacs-load "pymacs" nil t)
 (autoload 'pymacs-autoload "pymacs")
 
-; ropemacs
+;; ropemacs -
 (require 'pymacs)
 (pymacs-load "ropemacs" "rope-")
 
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[gj]sp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+
+;; tss
+;; If use bundled typescript.el,
+(require 'typescript)
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+
+(require 'tss)
+
+;; Key binding
+(setq tss-popup-help-key "C-:")
+(setq tss-jump-to-definition-key "C->")
+
+;; Make config suit for you. About the config item, eval the following sexp.
+;; (customize-group "tss")
+
+;; Do setting recommemded configuration
+(tss-config-default)
+
+
+;; 80 character line
 ;; Fill column-number-mode
 (setq-default fill-column 79)
 (add-to-list 'load-path "~/.emacs.d/el-get/fill-column-indicator")
@@ -68,8 +105,7 @@
 
 (setq indent-tabs-mode nil)
 
-; display line numbers to the right of the window
-;;(global-linum-mode t)
+;; display line numbers to the right of the window
 ;; Enable line numbers
 (global-linum-mode t)
 (eval-after-load 'linum
@@ -87,9 +123,7 @@
           (propertize (make-string (- w (length (number-to-string line))) ?0)
                       'face 'linum-leading-zero)
           (propertize (number-to-string line) 'face 'linum))))
-
      (setq linum-format 'linum-format-func)))
-
 (setq linum-format "%4d|")
 
 (setq mode-line-format
@@ -105,7 +139,7 @@
            (getenv "USER")))
 
 
-; show the current line and column numbers in the stats bar as well
+;; show the current line and column numbers in the stats bar as well
 (line-number-mode t)
 (column-number-mode t)
 
@@ -115,6 +149,7 @@
    (setq jedi:setup-keys t)                      ; optional
    (setq jedi:complete-on-dot t)                 ; optional
    (setq jedi:tooltip-method '(popup))
+
 
 (add-to-list 'load-path "~/.emacs.d/el-get/python-pep8")
 (require 'python-pep8)
@@ -170,7 +205,7 @@
 (color-theme-subtle-hacker)
 
 (custom-set-faces
- '(default ((t (:overline nil :inherit nil :stipple nil :background "gray2"
+ '(default ((t (:overline nil :inherit nil :stipple nil :background "gray3"
                 :foreground "#FFF991" :inverse-video nil :box nil
                 :strike-through nil :underline nil
                 :slant normal :weight normal :height 83 :width normal
