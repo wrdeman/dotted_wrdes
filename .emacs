@@ -24,7 +24,7 @@
 ; list all packages you want installed
 (setq my-el-get-packages
       (append
-       '(auto-complete pymacs fill-column-indicator jedi python-pep8 flycheck python-django color-theme)
+       '(auto-complete pymacs fill-column-indicator jedi python-pep8 flycheck python-django color-theme web-mode tss json-mode)
        (mapcar 'el-get-source-name el-get-sources)))
 
 (el-get 'sync my-el-get-packages)
