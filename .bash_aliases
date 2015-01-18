@@ -12,8 +12,13 @@ if [[ "$OSTYPE" == "darwin13" ]]; then
  alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs"
  alias emacw="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
 else
- alias emacw="emacs -nw"
+ alias emacw="emacsclient -t"
+ alias semacw="sudo emacsclient -t"
 fi
+export ALTERNATE_EDITOR=""
+export EDITOR="emacsclient -t"
+export VISUAL="emacsclient -c -a emacs"
+
 ######################################################################
 ###############               git          ###########################
 ######################################################################
