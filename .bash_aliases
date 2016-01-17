@@ -1,9 +1,12 @@
 alias ls="ls -G"
-alias nb="ipython notebook --pylab inline --browser=firefox"
+alias nb="ipython notebook --browser=firefox"
 alias djs="django-admin.py runserver 0.0.0.0:8000"
 alias djell="python .django-book.py"
 alias lpcc="enscript --pretty-print --color"
 alias cleantex="rm *.bbl *.aux *.blg *.log *.out *.*~"
+
+alias cboot="dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p' | xargs sudo apt-get -y purge"
+
 
 if [[ "$OSTYPE" == "darwin13" ]]; then
  alias preview="open -a Preview"
@@ -12,8 +15,8 @@ if [[ "$OSTYPE" == "darwin13" ]]; then
  alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs"
  alias emacw="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
 else
- alias emacw="emacsclient -t"
- alias semacw="sudo emacsclient -t"
+ alias emacw="emacsclient -t -s server"
+ alias semacw="sudo emacsclient -t -s server"
 fi
 export ALTERNATE_EDITOR=""
 export EDITOR="emacsclient -t"
