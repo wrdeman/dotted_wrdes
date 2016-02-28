@@ -1,28 +1,38 @@
 set nocompatible
 filetype off
-
-set rtp+=~/.vim/bundle/vundle/
+":PluginInstall
+set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
+set encoding=utf-8
 
-" git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
-" let Vundle manage Vundle
-" " required! 
-Plugin 'gmarik/vundle'
-"
-" " The bundles you install will be listed here
-" The :PluginInstall
 Plugin 'tpope/vim-fugitive'
 Plugin 'scrooloose/syntastic'
-Plugin 'scrooloose/nerdtree'
-Plugin 'ctrlpvim/ctrlp.vim'
 
-Plugin 'leafgarland/typescript-vim'
 Plugin 'Valloric/YouCompleteMe'
-"https://github.com/Valloric/YouCompleteMe#ubuntu-linux-x64-installation
+Plugin 'vim-scripts/indentpython.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'scrooloose/nerdtree'
+Plugin 'tmhedberg/SimpylFold'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'tomtom/tcomment_vim'
+Plugin 'christoomey/vim-tmux-navigator'
 
+Plugin 'Chiel92/vim-autoformat'
+" Needs formatters
+" sudo apt-get install python-autopep8
+" npm install -g js-beautify
+" npm install -g typescript-formatter
 call vundle#end()
 filetype plugin indent on
+" git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+" let Vundle manage Vundle
+" " required!
+" Bundle 'gmarik/vundle'
+"
+" " The bundles you install will be listed here
+"
+" filetype plugin indent on
 "
 " " The rest of your config follows here
 
@@ -34,16 +44,20 @@ augroup vimrc_autocmds
     autocmd FileType python set nowrap
     augroup END
 
-if !exists("g:ycm_semantic_triggers")
-    let g:ycm_semantic_triggers = {}
-endif
-let g:ycm_semantic_triggers['typescript'] = ['.']
-
-map <F2> :NERDTreeToggle<CR>
-
+" ctrlp
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 
+" nerdtree
+map <F2> :NERDTreeToggle<CR>
+let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
+
+"simply fold
+" Enable folding
+set foldmethod=indent
+set foldlevel=99
+" Enable folding with the spacebar
+nnoremap <space> za
 
 " Use <leader>l to toggle display of whitespace
 nmap <leader>l :set list!<CR>
@@ -55,7 +69,23 @@ set tabstop=4
 set shiftwidth=4
 set expandtab
 
-" more subtle popup colors 
+" more subtle popup colors
 if has ('gui_running')
-    highlight Pmenu guibg=#cccccc gui=bold    
+    highlight Pmenu guibg=#cccccc gui=bold
  endif
+
+ :set colorcolumn=79
+
+"au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+
+let g:ycm_autoclose_preview_window_after_completion=1
+map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
+
+let g:syntastic_json_checkers=['jsonlint']
+
+" shortcut for save
+noremap ; :w<CR>
+
+" autoformatting
+noremap <F3> :Autoformat<CR>
+
