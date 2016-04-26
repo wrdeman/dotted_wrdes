@@ -88,4 +88,6 @@ noremap ; :w<CR>
 
 " autoformatting
 noremap <F3> :Autoformat<CR>
+nnoremap <silent> <F4> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
 
+let g:ycm_python_binary_path = '/usr/bin/python'
