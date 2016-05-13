@@ -21,7 +21,7 @@ import System.IO
 --    where tiled = Tall 1 (5/100) (1/2)
 
 main = do
-    xmproc <- spawnPipe "/usr/bin/xmobar /home/simon/.xmobarrc"
+    xmproc <- spawnPipe "/usr/bin/xmobar /home/sosborne/.xmobarrc"
     xmonad $ ewmh defaultConfig
         { layoutHook = avoidStruts  $  layoutHook defaultConfig
         , manageHook = manageDocks <+> manageHook defaultConfig

@@ -17,12 +17,15 @@ Plugin 'tmhedberg/SimpylFold'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'christoomey/vim-tmux-navigator'
+Plugin 'airblade/vim-gitgutter'
+Plugin 'altercation/vim-colors-solarized'
 
 Plugin 'Chiel92/vim-autoformat'
-" Needs formatters
+
 " sudo apt-get install python-autopep8
 " npm install -g js-beautify
 " npm install -g typescript-formatter
+
 call vundle#end()
 filetype plugin indent on
 " git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
@@ -83,11 +86,33 @@ map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 let g:syntastic_json_checkers=['jsonlint']
 
-" shortcut for save
+" shortcut to save
 noremap ; :w<CR>
 
-" autoformatting
+" code formatting
 noremap <F3> :Autoformat<CR>
 nnoremap <silent> <F4> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
 
 let g:ycm_python_binary_path = '/usr/bin/python'
+
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/]\.(git)$',
+  \ 'file': '\v\.(pyc|swo)$',
+  \ }
+
+
+"Easier mapleader than the default "\"
+let mapleader = ","
+" type ,p to insert breakpoint. ^[ is at the end.  Insert with ctrl v and then
+" esc
+" " (the github web gui doesn't display control characters, but it is there)
+nnoremap <leader>p oimport ipdb;ipdb.set_trace()<Esc>
+nnoremap <leader><S-p> Oimport ipdb;ipdb.set_trace()<Esc>
+
+nnoremap <leader>t oimport pytest;pytest.set_trace()<Esc>
+nnoremap <leader><S-t> Oimport pytest;pytest.set_trace()<Esc>
+
+let g:solarized_termcolors=256
+syntax enable
+set background=dark
+colorscheme solarized
