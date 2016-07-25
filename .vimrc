@@ -14,21 +14,18 @@ Plugin 'vim-scripts/indentpython.vim'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'tmhedberg/SimpylFold'
-Plugin 'leafgarland/typescript-vim'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'altercation/vim-colors-solarized'
-
+Plugin 'leafgarland/typescript-vim'
+Plugin 'rking/ag.vim'
 Plugin 'Chiel92/vim-autoformat'
-
-" sudo apt-get install python-autopep8
-" npm install -g js-beautify
-" npm install -g typescript-formatter
+Plugin 'vim-airline/vim-airline'
 
 call vundle#end()
 filetype plugin indent on
-<Down>" git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+" git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 " let Vundle manage Vundle
 " " required!
 " Bundle 'gmarik/vundle'
@@ -72,6 +69,13 @@ set tabstop=4
 set shiftwidth=4
 set expandtab
 
+" set two space for typescript
+autocmd Filetype ts setlocal ts=2 sw=2 expandtab
+autocmd Filetype typescript setlocal ts=2 sw=2 expandtab
+autocmd Filetype html setlocal ts=2 sw=2 expandtab
+autocmd Filetype json setlocal ts=2 sw=2 expandtab
+
+
 " more subtle popup colors
 if has ('gui_running')
     highlight Pmenu guibg=#cccccc gui=bold
@@ -79,7 +83,7 @@ if has ('gui_running')
 
  :set colorcolumn=79
 
-"au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+"au BufRead,BufNewFile *.py,*.pyw,*.c,*.h,*.ts match BadWhitespace /\s\+$/
 
 let g:ycm_autoclose_preview_window_after_completion=1
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
@@ -109,11 +113,26 @@ nnoremap <leader><S-p> Oimport ipdb;ipdb.set_trace()<Esc>
 nnoremap <leader>t oimport pytest;pytest.set_trace()<Esc>
 nnoremap <leader><S-t> Oimport pytest;pytest.set_trace()<Esc>
 
-
+" You can configure ag.vim to always start searching from your project root instead of the cwd
+" sudo apt-get install silversearcher-ag
+let g:ag_working_path_mode="r"
 
 
 nnoremap <silent> <F4> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
 
-syntax enable
-set background=dark
-colorscheme solarized
+"syntax enable
+"set background=dark
+"colorscheme solarized
+
+" disable typescript-vim indentation
+let g:typescript_indent_disable = 1
+
+
+fun! <SID>StripTrailingWhitespaces()
+   let l = line(".")
+   let c = col(".")
+   %s/\s\+$//e
+   call cursor(l, c)
+endfun
+
+autocmd FileType c,cpp,java,php,ruby,python,typescript autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()    
