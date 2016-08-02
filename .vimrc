@@ -17,11 +17,9 @@ Plugin 'tmhedberg/SimpylFold'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'altercation/vim-colors-solarized'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'rking/ag.vim'
 Plugin 'Chiel92/vim-autoformat'
-Plugin 'vim-airline/vim-airline'
 
 call vundle#end()
 filetype plugin indent on
@@ -43,6 +41,12 @@ augroup vimrc_autocmds
     autocmd FileType python match Excess /\%120v.*/
     autocmd FileType python set nowrap
     augroup END
+
+" disable the arrrows 
+noremap <Up> <NOP>
+noremap <Down> <NOP>
+noremap <Left> <NOP>
+noremap <Right> <NOP>
 
 " ctrlp
 let g:ctrlp_map = '<c-p>'
@@ -75,6 +79,8 @@ autocmd Filetype typescript setlocal ts=2 sw=2 expandtab
 autocmd Filetype html setlocal ts=2 sw=2 expandtab
 autocmd Filetype json setlocal ts=2 sw=2 expandtab
 
+set relativenumber 
+set number
 
 " more subtle popup colors
 if has ('gui_running')
@@ -120,9 +126,6 @@ let g:ag_working_path_mode="r"
 
 nnoremap <silent> <F4> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
 
-"syntax enable
-"set background=dark
-"colorscheme solarized
 
 " disable typescript-vim indentation
 let g:typescript_indent_disable = 1
