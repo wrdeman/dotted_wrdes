@@ -9,7 +9,7 @@ Config { font = "xft:Monospaced-8:normal"
                     , Run StdinReader
                     , Run Battery ["-t", "<acstatus><watts><left>%", "-L", "10", "-H", "80", "-p", "3", "--", "-O", "<fc=green>⚡</fc>", "-o", "", "-L", "-15", "-H", "-5", "-l", "red", "-m", "blue", "-h", "green"] 600
                     , Run Wireless "wlan0" ["-t","<essid> <qualitybar>","-L","25","-H","75","--low","#FF0000","--normal","#F9FF00","--high","#00FF00"] 100
-                    , Run Com "sh ~/.xmonad/get_volume.sh" [] "vol" 10
+                    , Run Com "" ["~/.xmonad/get_volume.sh"] "vol" 10
                     ]
        , sepChar = "%"
        , alignSep = "}{"
