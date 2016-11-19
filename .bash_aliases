@@ -5,8 +5,8 @@ alias lpcc="enscript --pretty-print --color"
 alias cleantex="rm *.bbl *.aux *.blg *.log *.out *.*~"
 
 alias cboot="dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p' | xargs sudo apt-get -y purge"
-
-
+alias sos="pacmd set-card-profile 0 output:analog-stereo"
+alias pss="gnome-screenshot -a"
 ######################################################################
 ###############               git          ###########################
 ######################################################################
@@ -35,12 +35,5 @@ alias gm='git merge'
 alias gpush='git push origin master'
 alias gpull='git pull origin master'
 
-
-export PATH=$PATH:~/.xmonad
-
-if [ "$HOSTNAME" == "simon" ] || [ "$HOSTNAME" == "simon_remote" ]
-then
-    PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\u@\[\033[1;32m\]\h\[\033[00m\]:\w$ '
-else
-    PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\u@\[\033[1;31m\]\h\[\033[00m\]:\w$ '
-fi
+export WORKON_HOME=~/.venvs
+source /home/simon/.local/bin/virtualenvwrapper.sh

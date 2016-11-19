@@ -20,6 +20,11 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'rking/ag.vim'
 Plugin 'Chiel92/vim-autoformat'
+Plugin 'Shougo/vimproc'
+Plugin 'Quramy/tsuquyomi'
+Plugin 'Shougo/unite.vim'
+Plugin 'mhartington/vim-typings'
+Plugin 'majutsushi/tagbar'
 
 call vundle#end()
 filetype plugin indent on
@@ -95,6 +100,15 @@ let g:ycm_autoclose_preview_window_after_completion=1
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 let g:syntastic_json_checkers=['jsonlint']
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
 
 " shortcut to save
 noremap ; :w<CR>
@@ -102,11 +116,13 @@ noremap ; :w<CR>
 " code formatting
 noremap <F3> :Autoformat<CR>
 
-let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/]\.(git)$',
-  \ 'file': '\v\.(pyc|swo)$',
-  \ }
-
+" TagBar
+nmap <F8> :TagbarToggle<CR>
+" let g:ctrlp_custom_ignore = {
+"   \ 'dir':  '\v[\/]\.(git|node_modules)$',
+"   \ 'file': '\v\.(pyc|swo)$',
+"   \ }
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git\|collected_static\|bower_components'
 
 "Easier mapleader than the default "\"
 let mapleader = ","
@@ -118,6 +134,10 @@ nnoremap <leader><S-p> Oimport ipdb;ipdb.set_trace()<Esc>
 
 nnoremap <leader>t oimport pytest;pytest.set_trace()<Esc>
 nnoremap <leader><S-t> Oimport pytest;pytest.set_trace()<Esc>
+
+nnoremap <leader>c oconsole.log();<Esc>
+nnoremap <leader>d odebugger;<Esc>
+
 
 " You can configure ag.vim to always start searching from your project root instead of the cwd
 " sudo apt-get install silversearcher-ag
