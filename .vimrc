@@ -39,14 +39,14 @@ filetype plugin indent on
 "
 " " The rest of your config follows here
 
-augroup vimrc_autocmds
-    autocmd!
-    " highlight characters past column 120
-    autocmd FileType python highlight Excess ctermbg=DarkGrey guibg=Black
-    autocmd FileType python match Excess /\%120v.*/
-    autocmd FileType python set nowrap
-    augroup END
-
+" augroup vimrc_autocmds
+"     autocmd!
+"     " highlight characters past column 120
+"     autocmd FileType python highlight Excess ctermbg=DarkGrey guibg=Black
+"     autocmd FileType python match Excess /\%120v.*/
+"     autocmd FileType python set nowrap
+"     augroup END
+"
 " ctrlp
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
@@ -67,11 +67,7 @@ nmap <leader>l :set list!<CR>
 " " automatically change window's cwd to file's dir
 " set autochdir
 "
-" " I'm prefer spaces to tabs
-set tabstop=4
-set shiftwidth=4
-set expandtab
-
+"
 " more subtle popup colors
 if has ('gui_running')
     highlight Pmenu guibg=#cccccc gui=bold
