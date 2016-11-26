@@ -19,7 +19,6 @@ import System.IO
 
 -- myLayout = smartBorders Full ||| tiled
 --    where tiled = Tall 1 (5/100) (1/2)
-
 main = do
     xmproc <- spawnPipe "/usr/bin/xmobar /home/sosborne/.xmobarrc"
     xmonad $ ewmh defaultConfig
@@ -38,4 +37,7 @@ main = do
         , ((mod4Mask .|. shiftMask, xK_z), spawn "gnome-screensaver-command -l")
         , ((controlMask, xK_Print), spawn "sleep 0.2; scrot -s")
         , ((0, xK_Print), spawn "scrot")
+        , ((0, xK_F10), spawn "amixer -D pulse sset Master 10%-")
+        , ((0, xK_F11), spawn "amixer -D pulse sset Master 10%+")
+        , ((0, xK_F12), spawn "amixer -D pulse sset Master toggle")  
         ]
