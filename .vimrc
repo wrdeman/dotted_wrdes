@@ -108,7 +108,8 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
-
+let g:syntastic_typescript_tsc_fname = ''
+let g:syntastic_typescript_checkers=['tslint']
 
 " shortcut to save
 noremap ; :w<CR>
