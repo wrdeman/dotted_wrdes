@@ -47,6 +47,8 @@ bindsym Mod4+d exec dmenu_run
 # installed.
 # bindsym Mod4+d exec --no-startup-id i3-dmenu-desktop
 
+bindsym Control+mod1+l exec i3lock
+
 # change focus
 bindsym Mod4+$left focus left
 bindsym Mod4+$down focus down
@@ -166,6 +168,16 @@ bindsym Mod4+r mode "resize"
 bar {
         status_command i3status
 }
+
+# Volume
+bindsym Mod4+Control+Left exec amixer -D pulse sset Master 5%-
+bindsym Mod4+Control+Down exec amixer -D pulse sset Master toggle
+bindsym Mod4+Control+Up exec amixer -D pulse sset Master 5%+
+bindsym Mod4+Control+Right exec amixer -D pulse sset Master toggle 
+
+# Lazy shortcuts
+bindsym Mod4+c exec chromium-browser
+bindsym Mod4+s exec spotify
 
 #######################################################################
 # automatically start i3-config-wizard to offer the user to create a

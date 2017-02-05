@@ -99,6 +99,7 @@ if has ('gui_running')
 let g:ycm_autoclose_preview_window_after_completion=1
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
+let g:syntastic_python_checkers=["pep8", "python"]
 let g:syntastic_json_checkers=['jsonlint']
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -130,8 +131,8 @@ let mapleader = ","
 " type ,p to insert breakpoint. ^[ is at the end.  Insert with ctrl v and then
 " esc
 " " (the github web gui doesn't display control characters, but it is there)
-nnoremap <leader>p oimport ipdb;ipdb.set_trace()<Esc>
-nnoremap <leader><S-p> Oimport ipdb;ipdb.set_trace()<Esc>
+nnoremap <leader>p oimport pdb;pdb.set_trace()<Esc>
+nnoremap <leader><S-p> Oimport pdb;pdb.set_trace()<Esc>
 
 nnoremap <leader>t oimport pytest;pytest.set_trace()<Esc>
 nnoremap <leader><S-t> Oimport pytest;pytest.set_trace()<Esc>
