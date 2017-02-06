@@ -173,11 +173,11 @@ bar {
 bindsym Mod4+Control+Left exec amixer -D pulse sset Master 5%-
 bindsym Mod4+Control+Down exec amixer -D pulse sset Master toggle
 bindsym Mod4+Control+Up exec amixer -D pulse sset Master 5%+
-bindsym Mod4+Control+Right exec amixer -D pulse sset Master toggle 
+bindsym Mod4+Control+Right exec amixer -D pulse sset Master 5%+
 
 # Lazy shortcuts
 bindsym Mod4+c exec chromium-browser
-bindsym Mod4+s exec spotify
+bindsym Mod4+Shift+s exec spotify
 
 #######################################################################
 # automatically start i3-config-wizard to offer the user to create a
