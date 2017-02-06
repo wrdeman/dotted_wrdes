@@ -37,7 +37,7 @@ main = do
         , ((mod4Mask .|. shiftMask, xK_z), spawn "gnome-screensaver-command -l")
         , ((controlMask, xK_Print), spawn "sleep 0.2; scrot -s")
         , ((0, xK_Print), spawn "scrot")
-        , ((0, xK_F10), spawn "amixer -D pulse sset Master 10%-")
-        , ((0, xK_F11), spawn "amixer -D pulse sset Master 10%+")
-        , ((0, xK_F12), spawn "amixer -D pulse sset Master toggle")  
+        , ((shiftMask, xK_Left), spawn "amixer -D pulse sset Master 5%-")
+        , ((shiftMask, xK_Right), spawn "amixer -D pulse sset Master 5%+")
+        , ((shiftMask, xK_Down), spawn "amixer -D pulse sset Master toggle")  
         ]

@@ -5,7 +5,7 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 set encoding=utf-8
-
+Plugin 'tpope/vim-unimpaired.git'
 Plugin 'tpope/vim-fugitive'
 Plugin 'scrooloose/syntastic'
 
@@ -26,6 +26,9 @@ Plugin 'Shougo/unite.vim'
 Plugin 'mhartington/vim-typings'
 Plugin 'majutsushi/tagbar'
 
+Plugin 'google/vim-maktaba'
+Plugin 'google/vim-coverage'
+
 call vundle#end()
 filetype plugin indent on
 " git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
@@ -45,9 +48,9 @@ augroup vimrc_autocmds
     autocmd FileType python highlight Excess ctermbg=DarkGrey guibg=Black
     autocmd FileType python match Excess /\%120v.*/
     autocmd FileType python set nowrap
-    augroup END
+augroup END
 
-" disable the arrrows 
+" disable the arrrows
 noremap <Up> <NOP>
 noremap <Down> <NOP>
 noremap <Left> <NOP>
@@ -84,15 +87,15 @@ autocmd Filetype typescript setlocal ts=2 sw=2 expandtab
 autocmd Filetype html setlocal ts=2 sw=2 expandtab
 autocmd Filetype json setlocal ts=2 sw=2 expandtab
 
-set relativenumber 
+set relativenumber
 set number
 
 " more subtle popup colors
 if has ('gui_running')
     highlight Pmenu guibg=#cccccc gui=bold
- endif
+endif
 
- :set colorcolumn=79
+:set colorcolumn=79
 
 "au BufRead,BufNewFile *.py,*.pyw,*.c,*.h,*.ts match BadWhitespace /\s\+$/
 
@@ -103,7 +106,7 @@ let g:syntastic_json_checkers=['jsonlint']
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
-
+let g:syntastic_typescript_checkers = ['tslint', 'tsc']
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
@@ -118,6 +121,22 @@ noremap <F3> :Autoformat<CR>
 
 " TagBar
 nmap <F8> :TagbarToggle<CR>
+let g:tagbar_type_typescript = {
+            \ 'ctagstype': 'typescript',
+            \ 'kinds': [
+            \ 'c:classes',
+            \ 'n:modules',
+            \ 'f:functions',
+            \ 'v:variables',
+            \ 'v:varlambdas',
+            \ 'm:members',
+            \ 'i:interfaces',
+            \ 'e:enums',
+            \ ]
+            \ }
+
+
+
 " let g:ctrlp_custom_ignore = {
 "   \ 'dir':  '\v[\/]\.(git|node_modules)$',
 "   \ 'file': '\v\.(pyc|swo)$',
@@ -129,8 +148,8 @@ let mapleader = ","
 " type ,p to insert breakpoint. ^[ is at the end.  Insert with ctrl v and then
 " esc
 " " (the github web gui doesn't display control characters, but it is there)
-nnoremap <leader>p oimport ipdb;ipdb.set_trace()<Esc>
-nnoremap <leader><S-p> Oimport ipdb;ipdb.set_trace()<Esc>
+nnoremap <leader>p oimport pdb;pdb.set_trace()<Esc>
+nnoremap <leader><S-p> Oimport pdb;pdb.set_trace()<Esc>
 
 nnoremap <leader>t oimport pytest;pytest.set_trace()<Esc>
 nnoremap <leader><S-t> Oimport pytest;pytest.set_trace()<Esc>
@@ -146,16 +165,17 @@ let g:ag_working_path_mode="r"
 
 nnoremap <silent> <F4> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
 
+nnoremap <S-j> :%!python -m json.tool<CR>
 
 " disable typescript-vim indentation
 let g:typescript_indent_disable = 1
 
 
 fun! <SID>StripTrailingWhitespaces()
-   let l = line(".")
-   let c = col(".")
-   %s/\s\+$//e
-   call cursor(l, c)
+    let l = line(".")
+    let c = col(".")
+    %s/\s\+$//e
+    call cursor(l, c)
 endfun
 
-autocmd FileType c,cpp,java,php,ruby,python,typescript autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()    
+autocmd FileType c,cpp,java,php,ruby,python,typescript autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
