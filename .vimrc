@@ -102,6 +102,7 @@ endif
 let g:ycm_autoclose_preview_window_after_completion=1
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
+let g:syntastic_python_checkers=["pep8", "python"]
 let g:syntastic_json_checkers=['jsonlint']
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -111,7 +112,8 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
-
+let g:syntastic_typescript_tsc_fname = ''
+let g:syntastic_typescript_checkers=['tslint']
 
 " shortcut to save
 noremap ; :w<CR>
