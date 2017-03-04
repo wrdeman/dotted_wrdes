@@ -102,7 +102,7 @@ endif
 let g:ycm_autoclose_preview_window_after_completion=1
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
-let g:syntastic_python_checkers=["pep8", "python"]
+let g:syntastic_python_checkers=["pep8", "flake8"]
 let g:syntastic_json_checkers=['jsonlint']
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
