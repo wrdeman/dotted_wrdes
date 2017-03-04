@@ -40,4 +40,4 @@ alias gpull='git pull origin master'
 alias gdm="sh ~/dotted_wrdes/git_delete.sh"
 
 export WORKON_HOME=~/.venvs
-#source /home/simon/.local/bin/virtualenvwrapper.sh
+source /home/simon/.local/bin/virtualenvwrapper.sh
