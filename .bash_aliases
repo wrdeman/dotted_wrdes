@@ -8,6 +8,7 @@ alias cboot="dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed
 alias sos="pacmd set-card-profile 0 output:analog-stereo"
 alias pss="gnome-screenshot -a"
 alias svim="sudo vim"
+alias xclip="xclip -selection c"
 ######################################################################
 ###############               git          ###########################
 ######################################################################
