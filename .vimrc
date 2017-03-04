@@ -150,6 +150,9 @@ let mapleader = ","
 " type ,p to insert breakpoint. ^[ is at the end.  Insert with ctrl v and then
 " esc
 " " (the github web gui doesn't display control characters, but it is there)
+nnoremap <leader>i oimport ipdb;ipdb.set_trace()<Esc>
+nnoremap <leader><S-i> Oimport ipdb;ipdb.set_trace()<Esc>
+
 nnoremap <leader>p oimport pdb;pdb.set_trace()<Esc>
 nnoremap <leader><S-p> Oimport pdb;pdb.set_trace()<Esc>
 
