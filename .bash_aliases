@@ -21,6 +21,7 @@ alias gst='git status'
 alias gco='git checkout'
 alias glg='git log --stat --max-count=5'
 alias ga='git add'
+alias gi='git add -i'
 alias gau='git add $(git ls-files --others --exclude-standard)'
 alias gd='git diff'
 
