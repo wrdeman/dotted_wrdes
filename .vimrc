@@ -1,5 +1,5 @@
 set nocompatible
-filetype off
+filetype on
 ":PluginInstall
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -17,8 +17,8 @@ Plugin 'tmhedberg/SimpylFold'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'leafgarland/typescript-vim'
 Plugin 'rking/ag.vim'
+Plugin 'leafgarland/typescript-vim'
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'Shougo/vimproc'
 Plugin 'Quramy/tsuquyomi'
@@ -26,8 +26,8 @@ Plugin 'Shougo/unite.vim'
 Plugin 'mhartington/vim-typings'
 Plugin 'majutsushi/tagbar'
 
-Plugin 'google/vim-maktaba'
-Plugin 'google/vim-coverage'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 
 call vundle#end()
 filetype plugin indent on
@@ -103,6 +103,9 @@ let g:ycm_autoclose_preview_window_after_completion=1
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 let g:syntastic_python_checkers=["pep8", "flake8"]
+" let g:syntastic_python_flake8_args='--ignore=E501'
+" let g:syntastic_python_pep8_args='--ignore=E501,E402'
+"
 let g:syntastic_json_checkers=['jsonlint']
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -143,7 +146,7 @@ let g:tagbar_type_typescript = {
 "   \ 'dir':  '\v[\/]\.(git|node_modules)$',
 "   \ 'file': '\v\.(pyc|swo)$',
 "   \ }
-let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git\|collected_static\|bower_components'
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git\|collected_static\|bower_components\|htmlcov\|client'
 
 "Easier mapleader than the default "\"
 let mapleader = ","

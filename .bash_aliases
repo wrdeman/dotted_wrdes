@@ -20,6 +20,7 @@ alias gca='git commit -v -a'
 alias gst='git status'
 alias gco='git checkout'
 alias glg='git log --stat --max-count=5'
+alias gl1='git log --oneline'
 alias ga='git add'
 alias gi='git add -i'
 alias gau='git add $(git ls-files --others --exclude-standard)'
@@ -42,3 +43,8 @@ alias gdm="sh ~/dotted_wrdes/git_delete.sh"
 
 export WORKON_HOME=~/.venvs
 source /home/simon/.local/bin/virtualenvwrapper.sh
+
+# install pandoc lynx
+rmd () {
+    pandoc $1 | lynx -stdin
+}
