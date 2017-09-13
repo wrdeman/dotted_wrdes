@@ -197,3 +197,4 @@ bindsym Mod4+Shift+s exec spotify
 #######################################################################
 exec i3-config-wizard
 exec_always compton
+exec --no-startup-id xrandr --output DP1 --scale 2x2 --pos 3200x0 --panning 3840x2160+3200+0
