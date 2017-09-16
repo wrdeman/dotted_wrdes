@@ -184,6 +184,7 @@ bindsym Mod4+Control+Right exec amixer -D pulse sset Master 5%+
 
 # Lazy shortcuts
 bindsym Mod4+c exec chromium-browser
+bindsym Mod4+i exec firefox
 bindsym Mod4+Shift+s exec spotify
 
 #######################################################################
