@@ -5,10 +5,13 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 set encoding=utf-8
+Plugin 'VundleVim/Vundle.vim'
+
 Plugin 'tpope/vim-unimpaired.git'
 Plugin 'tpope/vim-fugitive'
-Plugin 'scrooloose/syntastic'
+" Plugin 'scrooloose/syntastic'
 
+Plugin 'w0rp/ale'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'vim-scripts/indentpython.vim'
 Plugin 'ctrlpvim/ctrlp.vim'
@@ -55,7 +58,7 @@ noremap <Up> <NOP>
 noremap <Down> <NOP>
 noremap <Left> <NOP>
 noremap <Right> <NOP>
-
+syntax on
 " ctrlp
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
@@ -102,21 +105,24 @@ endif
 let g:ycm_autoclose_preview_window_after_completion=1
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
-let g:syntastic_python_checkers=["pep8", "flake8"]
-" let g:syntastic_python_flake8_args='--ignore=E501'
-" let g:syntastic_python_pep8_args='--ignore=E501,E402'
-"
-let g:syntastic_json_checkers=['jsonlint']
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-let g:syntastic_typescript_checkers = ['tslint', 'tsc']
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_typescript_tsc_fname = ''
-let g:syntastic_typescript_checkers=['tslint']
+" let g:syntastic_python_checkers=["pep8", "flake8"]
+" " let g:syntastic_python_flake8_args='--ignore=E501'
+" " let g:syntastic_python_pep8_args='--ignore=E501,E402'
+" "
+" let g:syntastic_json_checkers=['jsonlint']
+" set statusline+=%#warningmsg#
+" set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
+" let g:syntastic_typescript_checkers = ['tslint', 'tsc']
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list = 1
+" let g:syntastic_check_on_open = 1
+" let g:syntastic_check_on_wq = 0
+" let g:syntastic_typescript_tsc_fname = ''
+" let g:syntastic_typescript_checkers=['tslint']
+
+nmap <silent> <]-l> <Plug>(ale_previous_wrap)
+nmap <silent> <[-l> <Plug>(ale_next_wrap)
 
 " shortcut to save
 noremap ; :w<CR>

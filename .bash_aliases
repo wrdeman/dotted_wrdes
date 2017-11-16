@@ -48,3 +48,7 @@ source /home/simon/.local/bin/virtualenvwrapper.sh
 rmd () {
     pandoc $1 | lynx -stdin
 }
+
+frm () {
+    $(find . -name '"*.'$1'"')
+}
