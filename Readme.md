@@ -1,9 +1,16 @@
-# Requirements
+# Always install
+vim
+tmux
+zathura
+silversearcher-ag
+git
+xclip
+
+## i3 Requirements
+i3
+i3blocks
 compton
 rofi
 
 ## Fonts
-https://github.com/supermarin/YosemiteSanFranciscoFont
-`cp *.ttf  ~/.fonts/`
-install lxappearance and set default 
-
+fonts-font-awesome
