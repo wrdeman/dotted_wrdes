@@ -27,10 +27,9 @@ client.unfocused        $inactive-bg-color $inactive-bg-color $inactive-text-col
 client.focused_inactive $inactive-bg-color $inactive-bg-color $inactive-text-color #00ff00
 client.urgent           $urgent-bg-color    $urgent-bg-color   $text-color          #00ff00
 
-new_window pixel 1
+for_window [class="^.*"] border pixel 5
 
-# use Mouse+Mod4 to drag floating windows to their wanted position
-floating_modifier Mod4
+new_window 1pixel
 
 # start a terminal
 bindsym Mod4+Return exec i3-sensible-terminal
@@ -41,6 +40,10 @@ bindsym Mod4+Shift+q kill
 bindsym Mod4+d exec rofi -show run -lines 5 -width 50 -padding 20 -opacity "90" -bw 0 -bc "$bg-color" -bg "$bg-color" -fg "$text-color" -hlbg "$bg-color" -hlfg "#9575cd" -font "pango:DejaVu Sans Mono 12" 
 
 bindsym Control+mod1+l exec i3lock -c 000000 -n
+
+# border on, see where focus is
+bindsym $mod+semicolon exec i3-msg border pixel 3
+bindsym --release $mod+semicolon exec i3-msg border pixel 0
 
 # change focus
 bindsym Mod4+$left focus left
@@ -114,6 +117,9 @@ bindsym Mod4+Shift+0 move container to workspace 10
 bindsym Mod4+Shift+greater move container to output right
 bindsym Mod4+Shift+less move container to output left
 
+# force floating for all new windows
+# for_window [class="[.]*"] floating enable
+
 # reload the configuration file
 bindsym Mod4+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
@@ -186,6 +192,6 @@ bindsym Ctrl+Print exec scrot -u '%Y%m%d_%H%M%S.png' -e 'mv $f ~/Pictures/'
 # Please remove the following exec line:
 #######################################################################
 exec i3-config-wizard
-exec_always compton
+exec_always --no-startup-id "killall -q compton; compton --config ~/.config/compton/compton.conf"
 exec --no-startup-id xrandr --output DP1 --scale 2x2 --pos 3200x0 --panning 3840x2160+3200+0
 exec --no-startup-id nm-applet

@@ -9,7 +9,6 @@ Plugin 'VundleVim/Vundle.vim'
 
 Plugin 'tpope/vim-unimpaired.git'
 Plugin 'tpope/vim-fugitive'
-" Plugin 'scrooloose/syntastic'
 
 Plugin 'w0rp/ale'
 Plugin 'Valloric/YouCompleteMe'
