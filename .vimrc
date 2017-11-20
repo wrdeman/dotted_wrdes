@@ -31,6 +31,7 @@ Plugin 'majutsushi/tagbar'
 
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+Plugin 'bling/vim-bufferline'
 
 call vundle#end()
 filetype plugin indent on
