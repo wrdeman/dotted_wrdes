@@ -42,8 +42,8 @@ bindsym Mod4+d exec rofi -show run -lines 5 -width 50 -padding 20 -opacity "90" 
 bindsym Control+mod1+l exec i3lock -c 000000 -n
 
 # border on, see where focus is
-bindsym $mod+semicolon exec i3-msg border pixel 3
-bindsym --release $mod+semicolon exec i3-msg border pixel 0
+# bindsym $mod+semicolon exec i3-msg border pixel 3
+# bindsym --release $mod+semicolon exec i3-msg border pixel 0
 
 # change focus
 bindsym Mod4+$left focus left
