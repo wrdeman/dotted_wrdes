@@ -9,6 +9,7 @@ alias sos="pacmd set-card-profile 0 output:analog-stereo"
 alias pss="gnome-screenshot -a"
 alias svim="sudo vim"
 alias xclip="xclip -selection c"
+
 ######################################################################
 ###############               git          ###########################
 ######################################################################
