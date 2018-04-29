@@ -4,7 +4,7 @@
 #
 
 # Font for window titles. Will also be used by the bar unless a different font
-font pango:DejaVu Sans Mono, awesome 14
+font pango:DejaVu Sans Mono, awesome 16
 
 # use these keys for focus, movement, and resize directions when reaching for
 # the arrows is not convenient

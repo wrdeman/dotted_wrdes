@@ -11,6 +11,7 @@ alias svim="sudo vim"
 alias xclip="xclip -selection c"
 
 ######################################################################
+
 # install pandoc lynx
 rmd () {
     pandoc $1 | lynx -stdin

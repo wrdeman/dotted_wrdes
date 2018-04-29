@@ -27,11 +27,16 @@ Plugin 'Quramy/tsuquyomi'
 Plugin 'Shougo/unite.vim'
 Plugin 'mhartington/vim-typings'
 Plugin 'majutsushi/tagbar'
-
+Plugin 'qpkorr/vim-bufkill'
+Plugin 'heavenshell/vim-pydocstring'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-
+Plugin 'bling/vim-bufferline'
+Plugin 'baverman/vial'
+Plugin 'baverman/vial-http'
 call vundle#end()
+set hidden
+filetype plugin on
 filetype plugin indent on
 " git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 " let Vundle manage Vundle
@@ -89,6 +94,9 @@ autocmd Filetype typescript setlocal ts=2 sw=2 expandtab
 autocmd Filetype html setlocal ts=2 sw=2 expandtab
 autocmd Filetype json setlocal ts=2 sw=2 expandtab
 
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType yaml setl indentkeys-=<:>
+
 set relativenumber
 set number
 
@@ -122,6 +130,9 @@ map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 nmap <silent> <]-l> <Plug>(ale_previous_wrap)
 nmap <silent> <[-l> <Plug>(ale_next_wrap)
+
+" shortcut to pydoc
+nmap <silent> <C-i> <Plug>(pydocstring)
 
 " shortcut to save
 noremap ; :w<CR>
