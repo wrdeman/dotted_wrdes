@@ -1,5 +1,5 @@
 set nocompatible
-filetype on
+filetype off
 ":PluginInstall
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -20,10 +20,12 @@ Plugin 'tomtom/tcomment_vim'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'rking/ag.vim'
-Plugin 'leafgarland/typescript-vim'
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'Shougo/vimproc'
+
 Plugin 'Quramy/tsuquyomi'
+Plugin 'leafgarland/typescript-vim'
+
 Plugin 'Shougo/unite.vim'
 Plugin 'mhartington/vim-typings'
 Plugin 'majutsushi/tagbar'
