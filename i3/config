@@ -120,6 +120,12 @@ bindsym Mod4+Shift+less move container to output left
 # force floating for all new windows
 # for_window [class="[.]*"] floating enable
 
+# gimp
+assign [class="Gimp"] gimp
+for_window [title="GIMP Startup"] move workspace gimp
+for_window [window_role="gimp-toolbox"] floating disable; layout stacking; move left; resize shrink right 31px or 31 ppt
+
+
 # reload the configuration file
 bindsym Mod4+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
