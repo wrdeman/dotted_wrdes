@@ -203,3 +203,20 @@ fun! <SID>StripTrailingWhitespaces()
 endfun
 
 autocmd FileType c,cpp,java,php,ruby,python,typescript autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
+
+
+""" COLOURS 
+" Set typewriter as colorscheme
+" colorscheme typewriter-night
+
+" Set typewriter airline theme
+" let g:airline_theme = 'typewriter'
+
+" Change the cursor from block to i-beam in INSERT mode
+let &t_SI = "\e[5 q"
+let &t_EI = "\e[1 q"
+augroup myCmds
+  au!
+  autocmd VimEnter * silent !echo -ne "\e[1 q"
+augroup END
+""" COLOURS END

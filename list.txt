@@ -1,0 +1,14 @@
+meld
+i3
+i3blocks
+rofi
+compton
+vim
+zsh
+tmux
+ag-silversearcher
+git
+tig
+
+ruby
+gem install tmuxinator
