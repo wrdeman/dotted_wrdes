@@ -97,4 +97,5 @@ export SSH_KEY_PATH="~/.ssh/rsa_id"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+export PIPENV_VENV_IN_PROJECT=1
 source ~/.aliases
