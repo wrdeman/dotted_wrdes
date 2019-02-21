@@ -200,5 +200,6 @@ bindsym Ctrl+Print exec scrot -u '%Y%m%d_%H%M%S.png' -e 'mv $f ~/Pictures/'
 exec i3-config-wizard
 exec_always --no-startup-id "killall -q compton; compton --config ~/.config/compton/compton.conf"
 exec --no-startup-id feh --bg-scale /usr/share/backgrounds/ubuntu-default-greyscale-wallpaper.png
-exec --no-startup-id xrandr --output DP1 --scale 2x2 --pos 3200x0 --panning 3840x2160+3200+0
+# exec --no-startup-id xrandr --output DP-1-2 --scale 2x2 --pos 3200x0 --panning 3840x2160+3200+0
+# exec --no-startup-id xrandr --output DP-1-1 --scale 2x2 --pos 3200x0 --panning 3840x2160+3200+0
 exec --no-startup-id nm-applet

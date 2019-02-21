@@ -19,9 +19,12 @@ Plugin 'tmhedberg/SimpylFold'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'airblade/vim-gitgutter'
+Plugin 'airblade/vim-rooter'
 Plugin 'rking/ag.vim'
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'Shougo/vimproc'
+Plugin 'posva/vim-vue'
+Plugin 'martinda/Jenkinsfile-vim-syntax'
 
 Plugin 'Quramy/tsuquyomi'
 Plugin 'leafgarland/typescript-vim'
@@ -36,6 +39,7 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'bling/vim-bufferline'
 Plugin 'baverman/vial'
 Plugin 'baverman/vial-http'
+
 call vundle#end()
 set hidden
 filetype plugin on
@@ -49,7 +53,6 @@ filetype plugin indent on
 "
 " filetype plugin indent on
 "
-" " The rest of your config follows here
 
 augroup vimrc_autocmds
     autocmd!
@@ -107,28 +110,10 @@ if has ('gui_running')
     highlight Pmenu guibg=#cccccc gui=bold
 endif
 
-:set colorcolumn=79
 
-"au BufRead,BufNewFile *.py,*.pyw,*.c,*.h,*.ts match BadWhitespace /\s\+$/
 
 let g:ycm_autoclose_preview_window_after_completion=1
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
-
-" let g:syntastic_python_checkers=["pep8", "flake8"]
-" " let g:syntastic_python_flake8_args='--ignore=E501'
-" " let g:syntastic_python_pep8_args='--ignore=E501,E402'
-" "
-" let g:syntastic_json_checkers=['jsonlint']
-" set statusline+=%#warningmsg#
-" set statusline+=%{SyntasticStatuslineFlag()}
-" set statusline+=%*
-" let g:syntastic_typescript_checkers = ['tslint', 'tsc']
-" let g:syntastic_always_populate_loc_list = 1
-" let g:syntastic_auto_loc_list = 1
-" let g:syntastic_check_on_open = 1
-" let g:syntastic_check_on_wq = 0
-" let g:syntastic_typescript_tsc_fname = ''
-" let g:syntastic_typescript_checkers=['tslint']
 
 nmap <silent> <]-l> <Plug>(ale_previous_wrap)
 nmap <silent> <[-l> <Plug>(ale_next_wrap)
@@ -141,6 +126,9 @@ noremap ; :w<CR>
 
 " code formatting
 noremap <F3> :Autoformat<CR>
+
+" Ag word under cursor
+nnoremap <leader>k :exe 'Ag!' expand('<cword>')<cr>
 
 " TagBar
 nmap <F8> :TagbarToggle<CR>
@@ -160,25 +148,7 @@ let g:tagbar_type_typescript = {
 
 
 
-" let g:ctrlp_custom_ignore = {
-"   \ 'dir':  '\v[\/]\.(git|node_modules)$',
-"   \ 'file': '\v\.(pyc|swo)$',
-"   \ }
-let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git\|collected_static\|bower_components\|htmlcov\|client'
-
-"Easier mapleader than the default "\"
-let mapleader = ","
-" type ,p to insert breakpoint. ^[ is at the end.  Insert with ctrl v and then
-" esc
-" " (the github web gui doesn't display control characters, but it is there)
-nnoremap <leader>i oimport ipdb;ipdb.set_trace()<Esc>
-nnoremap <leader><S-i> Oimport ipdb;ipdb.set_trace()<Esc>
-
-nnoremap <leader>p oimport pdb;pdb.set_trace()<Esc>
-nnoremap <leader><S-p> Oimport pdb;pdb.set_trace()<Esc>
-
-nnoremap <leader>t oimport pytest;pytest.set_trace()<Esc>
-nnoremap <leader><S-t> Oimport pytest;pytest.set_trace()<Esc>
+let g:ctrlp_custom_ignore = 'node_modules\|git\|collected_static\|bower_components\|htmlcov\|client'
 
 nnoremap <leader>c oconsole.log();<Esc>
 nnoremap <leader>d odebugger;<Esc>
@@ -191,7 +161,6 @@ let g:ag_working_path_mode="r"
 
 nnoremap <silent> <F4> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
 
-nnoremap <S-j> :%!python -m json.tool<CR>
 
 " disable typescript-vim indentation
 let g:typescript_indent_disable = 1
@@ -204,15 +173,15 @@ fun! <SID>StripTrailingWhitespaces()
     call cursor(l, c)
 endfun
 
-autocmd FileType c,cpp,java,php,ruby,python,typescript autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
-
+autocmd FileType c,cpp,java,php,ruby,python,javascript,vue,typescript autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
+au  BufNewFile,BufRead *.jst set syntax=jst
 
 """ COLOURS 
-" Set typewriter as colorscheme
-" colorscheme typewriter-night
 
 " Set typewriter airline theme
 " let g:airline_theme = 'typewriter'
+set background=dark
+set t_Co=256
 
 " Change the cursor from block to i-beam in INSERT mode
 let &t_SI = "\e[5 q"
@@ -221,4 +190,5 @@ augroup myCmds
   au!
   autocmd VimEnter * silent !echo -ne "\e[1 q"
 augroup END
+
 """ COLOURS END
