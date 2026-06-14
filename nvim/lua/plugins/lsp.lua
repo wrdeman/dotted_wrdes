@@ -1,6 +1,9 @@
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
+-- Native Neovim 0.11+ LSP configuration.
+-- nvim-lspconfig (installed via lazy) registers default cmd/filetypes/root_markers
+-- for each server; we customise with vim.lsp.config and activate with vim.lsp.enable.
 
--- Diagnostic display settings
+-- ── Diagnostics ──────────────────────────────────────────────────────────────
+
 vim.diagnostic.config({
     virtual_text = true,
     signs = true,
@@ -34,39 +37,42 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 -- Apply completion capabilities to every server (merges with nvim-lspconfig's
 -- shipped lsp/<name>.lua defaults: cmd, filetypes, root_markers).
-vim.lsp.config("*", { capabilities = capabilities })
+vim.lsp.config("*", { capabilities = require("cmp_nvim_lsp").default_capabilities() })
 
--- ── Go ──────────────────────────────────────────────────────────────────────
+-- ── Go ───────────────────────────────────────────────────────────────────────
+
 vim.lsp.config("gopls", {
     settings = {
         gopls = {
-            analyses  = { unusedparams = true, shadow = true },
+            analyses    = { unusedparams = true, shadow = true },
             staticcheck = true,
-            gofumpt   = true,   -- stricter gofmt formatting
+            gofumpt     = true,
         },
     },
 })
 
 -- ── Python / Django ──────────────────────────────────────────────────────────
+
 vim.lsp.config("pyright", {
     settings = {
         python = {
             analysis = {
-                typeCheckingMode = "basic",  -- "strict" when you want more noise
-                autoSearchPaths  = true,
+                typeCheckingMode       = "basic",
+                autoSearchPaths        = true,
                 useLibraryCodeForTypes = true,
             },
         },
     },
 })
 
--- ── Lua (for editing this config) ───────────────────────────────────────────
+-- ── Lua (for editing this config) ────────────────────────────────────────────
+
 vim.lsp.config("lua_ls", {
     settings = {
         Lua = {
-            runtime  = { version = "LuaJIT" },
-            workspace = {
-                library = vim.api.nvim_get_runtime_file("", true),
+            runtime     = { version = "LuaJIT" },
+            workspace   = {
+                library         = vim.api.nvim_get_runtime_file("", true),
                 checkThirdParty = false,
             },
             diagnostics = { globals = { "vim" } },
@@ -75,7 +81,7 @@ vim.lsp.config("lua_ls", {
     },
 })
 
--- ── Python lint/quick-fix (ruff) ──────────────────────────────────────────────
+-- ── Python lint/quick-fix (ruff) ─────────────────────────────────────────────
 -- Runs alongside pyright: ruff owns linting + code actions, pyright owns
 -- type-checking + hover. Disable ruff's hover so pyright's wins.
 vim.lsp.config("ruff", {
@@ -84,11 +90,13 @@ vim.lsp.config("ruff", {
     end,
 })
 
--- ── SQL (sqls) ────────────────────────────────────────────────────────────────
+-- ── SQL (sqls) ───────────────────────────────────────────────────────────────
 -- Completion, go-to-definition and hover for SQL. DB connections are NOT set
 -- here — interactive querying goes through dadbod-ui (per-project .env, see
 -- nvim-sql.md); sqls runs with its defaults for editing assistance.
 vim.lsp.config("sqls", {})
+
+-- ── Enable servers ────────────────────────────────────────────────────────────
 
 vim.lsp.enable({ "gopls", "pyright", "lua_ls", "ruff", "sqls" })
 
