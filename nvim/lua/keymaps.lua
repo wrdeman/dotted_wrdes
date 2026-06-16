@@ -6,14 +6,13 @@ local map = function(mode, lhs, rhs, desc)
     vim.keymap.set(mode, lhs, rhs, { silent = true, desc = desc })
 end
 
--- Navigation
-map("n", "<C-h>", "<C-w>h", "Move to left split")
-map("n", "<C-l>", "<C-w>l", "Move to right split")
-map("n", "<C-j>", "<C-w>j", "Move to lower split")
-map("n", "<C-k>", "<C-w>k", "Move to upper split")
+-- Navigation across nvim splits AND tmux panes is handled by
+-- vim-tmux-navigator (see plugins/init.lua). It owns <C-h/j/k/l>, falling
+-- through to tmux at a split edge — do NOT remap them with <C-w> here.
 
 -- File explorer
 map("n", "<leader>e", ":NvimTreeToggle<CR>", "Toggle file tree")
+map("n", "<F2>", ":NvimTreeToggle<CR>", "Toggle file tree")
 map("n", "<leader>E", ":NvimTreeFindFile<CR>", "Reveal file in tree")
 
 -- Buffer management

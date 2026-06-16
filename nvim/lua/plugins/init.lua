@@ -58,6 +58,7 @@ require("lazy").setup({
     -- Treesitter
     {
         "nvim-treesitter/nvim-treesitter",
+        branch = "master",
         build = ":TSUpdate",
         config = function() require("plugins.treesitter") end,
     },
@@ -92,6 +93,24 @@ require("lazy").setup({
             { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
             { "<leader>fg", "<cmd>Telescope live_grep<cr>",  desc = "Live grep" },
             { "<leader>fb", "<cmd>Telescope buffers<cr>",    desc = "Buffers" },
+        },
+    },
+
+    -- Seamless split/pane navigation with tmux (pairs with the is_vim
+    -- forwarding block in .tmux.conf). Moves nvim splits, then crosses
+    -- into tmux panes at the edge.
+    {
+        "christoomey/vim-tmux-navigator",
+        cmd = {
+            "TmuxNavigateLeft", "TmuxNavigateDown", "TmuxNavigateUp",
+            "TmuxNavigateRight", "TmuxNavigatePrevious",
+        },
+        keys = {
+            { "<C-h>",  "<cmd>TmuxNavigateLeft<cr>",     desc = "Nav split/pane left" },
+            { "<C-j>",  "<cmd>TmuxNavigateDown<cr>",     desc = "Nav split/pane down" },
+            { "<C-k>",  "<cmd>TmuxNavigateUp<cr>",       desc = "Nav split/pane up" },
+            { "<C-l>",  "<cmd>TmuxNavigateRight<cr>",    desc = "Nav split/pane right" },
+            { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Nav last split/pane" },
         },
     },
 

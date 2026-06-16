@@ -100,3 +100,7 @@ export SSH_KEY_PATH="~/.ssh/rsa_id"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 export PIPENV_VENV_IN_PROJECT=1
 source ~/.aliases
+
+# Use neovim as default editor (Claude Code ctrl-g)
+export EDITOR=nvim
+export VISUAL=nvim

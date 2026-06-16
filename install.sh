@@ -99,6 +99,9 @@ install_packages_mac() {
         brew install --cask mactex || warn "MacTeX install failed — install manually from tug.org/mactex"
     fi
 
+    # Nerd Font for nvim-tree / lualine glyphs
+    install_nerd_font_mac
+
     # Python neovim provider
     install_pynvim_mac
 }
@@ -149,7 +152,42 @@ install_packages_linux() {
 
     install_neovim_linux
     install_node_linux
+    install_nerd_font_linux
     install_pynvim_linux
+}
+
+# ── Nerd Font (devicon glyphs for nvim-tree / lualine) ────────────────────────
+
+install_nerd_font_mac() {
+    if brew list --cask font-hack-nerd-font &>/dev/null 2>&1; then
+        ok "Already installed: font-hack-nerd-font"
+    else
+        info "Installing Hack Nerd Font..."
+        brew install --cask font-hack-nerd-font || warn "Nerd Font install failed — install a Nerd Font manually"
+    fi
+    warn "Set your terminal's font to 'Hack Nerd Font' so nvim-tree/lualine icons render"
+}
+
+install_nerd_font_linux() {
+    local font_dir="$HOME/.local/share/fonts"
+    if ls "$font_dir"/HackNerdFont* &>/dev/null 2>&1; then
+        ok "Hack Nerd Font already installed"
+        return
+    fi
+    info "Installing Hack Nerd Font..."
+    local tmp
+    tmp="$(mktemp -d)"
+    if curl -fLo "$tmp/Hack.zip" \
+        "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip"; then
+        mkdir -p "$font_dir"
+        unzip -oq "$tmp/Hack.zip" -d "$font_dir" || warn "Failed to unzip Nerd Font"
+        has fc-cache && fc-cache -f "$font_dir" >/dev/null 2>&1
+        ok "Hack Nerd Font installed to $font_dir"
+    else
+        warn "Nerd Font download failed — install a Nerd Font manually from nerdfonts.com"
+    fi
+    rm -rf "$tmp"
+    warn "Set your terminal's font to 'Hack Nerd Font' so nvim-tree/lualine icons render"
 }
 
 # ── Neovim: Linux install from GitHub releases ────────────────────────────────
