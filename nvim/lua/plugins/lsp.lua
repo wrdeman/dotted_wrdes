@@ -25,7 +25,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         map("K",          vim.lsp.buf.hover,            "Hover docs")
         map("<leader>rn", vim.lsp.buf.rename,           "Rename symbol")
         map("<leader>ca", vim.lsp.buf.code_action,      "Code action")
-        map("<leader>f",  function() vim.lsp.buf.format({ async = true }) end, "Format buffer")
+        -- <leader>f (format) is owned by conform.nvim — see plugins/conform.lua
         map("[d",         function() vim.diagnostic.jump({ count = -1, float = true }) end, "Prev diagnostic")
         map("]d",         function() vim.diagnostic.jump({ count = 1, float = true }) end,  "Next diagnostic")
         map("<leader>d",  vim.diagnostic.open_float,    "Show diagnostic")
@@ -75,25 +75,16 @@ vim.lsp.config("lua_ls", {
     },
 })
 
-vim.lsp.enable({ "gopls", "pyright", "lua_ls" })
-
--- Format + organise imports on save for Go files
-vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = "*.go",
-    callback = function()
-        local clients = vim.lsp.get_clients({ bufnr = 0, name = "gopls" })
-        if #clients == 0 then return end
-        local enc = clients[1].offset_encoding
-        local params = vim.lsp.util.make_range_params(0, enc)
-        params.context = { only = { "source.organizeImports" }, diagnostics = {} }
-        local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 3000)
-        for _, res in pairs(result or {}) do
-            for _, r in pairs(res.result or {}) do
-                if r.edit then
-                    vim.lsp.util.apply_workspace_edit(r.edit, enc)
-                end
-            end
-        end
-        vim.lsp.buf.format({ async = false })
+-- ── Python lint/quick-fix (ruff) ──────────────────────────────────────────────
+-- Runs alongside pyright: ruff owns linting + code actions, pyright owns
+-- type-checking + hover. Disable ruff's hover so pyright's wins.
+vim.lsp.config("ruff", {
+    on_attach = function(client)
+        client.server_capabilities.hoverProvider = false
     end,
 })
+
+vim.lsp.enable({ "gopls", "pyright", "lua_ls", "ruff" })
+
+-- Note: format + organise-imports on save is handled by conform.nvim
+-- (goimports + gofumpt for Go, ruff for Python) — see plugins/conform.lua.

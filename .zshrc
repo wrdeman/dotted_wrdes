@@ -64,6 +64,7 @@ plugins=(
   tmux
   tmuxinator
   vi-mode
+  docker-compose
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -74,6 +75,8 @@ source $ZSH/oh-my-zsh.sh
 export PYTHON_BIN_PATH="$(python3 -m site --user-base)/bin"
 export PATH="$PATH:$PYTHON_BIN_PATH"
 export PATH="$HOME/.local/bin:$PATH"
+# Dart pub global binaries (fvm lives here, installed via `dart pub global activate fvm`)
+export PATH="$HOME/.pub-cache/bin:$PATH"
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 

@@ -26,8 +26,18 @@ require("lazy").setup({
         "williamboman/mason-lspconfig.nvim",
         dependencies = { "williamboman/mason.nvim" },
         opts = {
-            ensure_installed = { "gopls", "pyright", "lua_ls" },
+            ensure_installed = { "gopls", "pyright", "lua_ls", "ruff" },
             automatic_installation = true,
+        },
+    },
+
+    -- Auto-install formatters / debuggers (non-LSP tools Mason doesn't pull via
+    -- mason-lspconfig). Keep this list in sync with conform.lua + dap.lua.
+    {
+        "WhoIsSethDaniel/mason-tool-installer.nvim",
+        dependencies = { "williamboman/mason.nvim" },
+        opts = {
+            ensure_installed = { "gofumpt", "goimports", "stylua", "delve", "debugpy" },
         },
     },
 
@@ -88,12 +98,22 @@ require("lazy").setup({
     {
         "nvim-telescope/telescope.nvim",
         branch = "0.1.x",
-        dependencies = { "nvim-lua/plenary.nvim" },
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            -- Native fzf sorter — much faster matching (needs `make` + a C compiler)
+            { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+        },
         keys = {
             { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
             { "<leader>fg", "<cmd>Telescope live_grep<cr>",  desc = "Live grep" },
             { "<leader>fb", "<cmd>Telescope buffers<cr>",    desc = "Buffers" },
+            { "<leader>fh", "<cmd>Telescope help_tags<cr>",  desc = "Help tags" },
+            { "<leader>fd", "<cmd>Telescope diagnostics<cr>", desc = "Diagnostics" },
         },
+        config = function()
+            require("telescope").setup({ extensions = { fzf = {} } })
+            require("telescope").load_extension("fzf")
+        end,
     },
 
     -- Seamless split/pane navigation with tmux (pairs with the is_vim
@@ -117,11 +137,109 @@ require("lazy").setup({
     -- Git signs in the gutter
     { "lewis6991/gitsigns.nvim", config = true },
 
+    -- Lazygit TUI in a float (needs the `lazygit` binary — install.sh pulls it in)
+    {
+        "kdheepak/lazygit.nvim",
+        cmd = {
+            "LazyGit", "LazyGitConfig", "LazyGitCurrentFile",
+            "LazyGitFilter", "LazyGitFilterCurrentFile",
+        },
+        dependencies = { "nvim-lua/plenary.nvim" },
+        keys = {
+            { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
+        },
+    },
+
     -- Auto-close brackets/quotes
     { "windwp/nvim-autopairs", event = "InsertEnter", config = true },
 
     -- Comment toggle (gcc / gc in visual)
     { "numToStr/Comment.nvim", config = true },
+
+    -- Formatter runner (black/isort via ruff, gofumpt+goimports, stylua).
+    -- Owns format-on-save and <leader>f — replaces the old LSP format path.
+    {
+        "stevearc/conform.nvim",
+        event = { "BufWritePre" },
+        cmd = { "ConformInfo" },
+        keys = {
+            {
+                "<leader>f",
+                function() require("conform").format({ async = true, lsp_format = "fallback" }) end,
+                mode = { "n", "v" },
+                desc = "Format buffer / selection",
+            },
+        },
+        config = function() require("plugins.conform") end,
+    },
+
+    -- Debugging (DAP) — breakpoints, stepping, REPL, UI panels
+    {
+        "mfussenegger/nvim-dap",
+        dependencies = {
+            "rcarriga/nvim-dap-ui",
+            "nvim-neotest/nvim-nio",          -- required by dap-ui
+            "leoluz/nvim-dap-go",             -- Go adapter (delve)
+            "mfussenegger/nvim-dap-python",   -- Python adapter (debugpy)
+        },
+        config = function() require("plugins.dap") end,
+    },
+
+    -- Flutter / Dart — dartls LSP, hot reload/restart, devices, DAP debugging.
+    -- Uses the fvm-managed SDK (fvm = true in plugins/flutter.lua). Loads on
+    -- dart files; <leader>fl* drives the run cycle.
+    {
+        "nvim-flutter/flutter-tools.nvim",
+        ft = "dart",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "hrsh7th/cmp-nvim-lsp",
+        },
+        -- Maps are buffer-local to dart files, NOT a `keys` load-trigger: the
+        -- :Flutter* commands only register once flutter-tools loads on a dart
+        -- BufEnter, so a global mapping fired from a non-dart buffer would hit
+        -- E492. This FileType autocmd is registered at startup (init runs eagerly)
+        -- so it fires for every dart buffer, including the first.
+        init = function()
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = "dart",
+                callback = function(ev)
+                    local map = function(lhs, rhs, desc)
+                        vim.keymap.set("n", lhs, rhs, { buffer = ev.buf, silent = true, desc = desc })
+                    end
+                    map("<leader>flr", "<cmd>FlutterRun<cr>",           "Flutter run")
+                    map("<leader>flR", "<cmd>FlutterRestart<cr>",       "Flutter hot restart")
+                    map("<leader>flh", "<cmd>FlutterReload<cr>",        "Flutter hot reload")
+                    map("<leader>flq", "<cmd>FlutterQuit<cr>",          "Flutter quit")
+                    map("<leader>fld", "<cmd>FlutterDevices<cr>",       "Flutter devices")
+                    map("<leader>fle", "<cmd>FlutterEmulators<cr>",     "Flutter emulators")
+                    map("<leader>flo", "<cmd>FlutterOutlineToggle<cr>", "Flutter outline toggle")
+                    map("<leader>flD", "<cmd>FlutterDevTools<cr>",      "Flutter DevTools")
+                    map("<leader>fll", "<cmd>FlutterLspRestart<cr>",    "Flutter LSP restart")
+                end,
+            })
+        end,
+        config = function() require("plugins.flutter") end,
+    },
+
+    -- Keymap discoverability — popup of leader-key bindings
+    { "folke/which-key.nvim", event = "VeryLazy", opts = {} },
+
+    -- Diagnostics / references / quickfix in a dedicated panel
+    {
+        "folke/trouble.nvim",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        cmd = "Trouble",
+        keys = {
+            { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>",              desc = "Diagnostics (Trouble)" },
+            { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer diagnostics (Trouble)" },
+            { "<leader>xs", "<cmd>Trouble symbols toggle<cr>",                  desc = "Symbols (Trouble)" },
+            { "<leader>xl", "<cmd>Trouble loclist toggle<cr>",                  desc = "Location list (Trouble)" },
+            { "<leader>xq", "<cmd>Trouble qflist toggle<cr>",                   desc = "Quickfix list (Trouble)" },
+            { "gR",         "<cmd>Trouble lsp_references toggle<cr>",           desc = "LSP references (Trouble)" },
+        },
+        opts = {},
+    },
 }, {
     ui = { border = "rounded" },
     checker = { enabled = false },

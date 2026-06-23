@@ -75,6 +75,7 @@ install_packages_mac() {
         zsh
         the_silver_searcher   # ag
         tig
+        lazygit               # git TUI (lazygit.nvim)
         ripgrep               # for Telescope live_grep
         ruby
         node                  # for Mason LSP servers
@@ -127,6 +128,8 @@ install_packages_linux() {
         curl
         wget
         unzip
+        build-essential       # cc/make: treesitter parsers + telescope-fzf-native
+        golang-go             # Mason-installed Go tools: delve, gofumpt, goimports
         fonts-font-awesome
     )
 
@@ -151,6 +154,7 @@ install_packages_linux() {
     fi
 
     install_neovim_linux
+    install_lazygit_linux
     install_node_linux
     install_nerd_font_linux
     install_pynvim_linux
@@ -219,6 +223,47 @@ install_neovim_linux() {
     rm -rf "$tmp"
     ok "Neovim ${nvim_ver} installed to ~/.local/bin/nvim"
     warn "Ensure ~/.local/bin is in your PATH (added to .zshrc by install_links)"
+}
+
+# ── Lazygit: Linux install from GitHub releases ───────────────────────────────
+
+install_lazygit_linux() {
+    if has lazygit; then
+        ok "Lazygit already installed: $(lazygit --version | head -1)"
+        return
+    fi
+
+    info "Installing Lazygit from GitHub releases..."
+    local lg_ver
+    lg_ver="$(curl -fsSL https://api.github.com/repos/jesseduffield/lazygit/releases/latest \
+        | grep '"tag_name"' | cut -d'"' -f4)"
+    if [ -z "$lg_ver" ]; then
+        warn "Could not resolve lazygit version — skipping"
+        return
+    fi
+
+    # GitHub assets are named without the leading 'v' in the version
+    local arch asset
+    case "$(uname -m)" in
+        x86_64)  arch="x86_64" ;;
+        aarch64|arm64) arch="arm64" ;;
+        *) warn "Unsupported arch for lazygit: $(uname -m) — skipping"; return ;;
+    esac
+    asset="lazygit_${lg_ver#v}_Linux_${arch}.tar.gz"
+
+    local tmp
+    tmp="$(mktemp -d)"
+    if curl -fLo "$tmp/lazygit.tar.gz" \
+        "https://github.com/jesseduffield/lazygit/releases/download/${lg_ver}/${asset}"; then
+        tar xzf "$tmp/lazygit.tar.gz" -C "$tmp" lazygit
+        mkdir -p "$HOME/.local/bin"
+        mv "$tmp/lazygit" "$HOME/.local/bin/lazygit"
+        chmod +x "$HOME/.local/bin/lazygit"
+        ok "Lazygit ${lg_ver} installed to ~/.local/bin/lazygit"
+    else
+        warn "Lazygit download failed — install manually from github.com/jesseduffield/lazygit"
+    fi
+    rm -rf "$tmp"
 }
 
 # ── Node.js: Linux via NodeSource ─────────────────────────────────────────────
