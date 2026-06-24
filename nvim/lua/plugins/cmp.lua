@@ -57,6 +57,7 @@ cmp.setup({
                 luasnip  = "[Snip]",
                 buffer   = "[Buf]",
                 path     = "[Path]",
+                gitmoji  = "[Emoji]",
             }
             item.menu = source_labels[entry.source.name] or ""
             return item
@@ -64,4 +65,14 @@ cmp.setup({
     },
 
     experimental = { ghost_text = true },
+})
+
+-- Gitmoji source (Dynge/gitmoji.nvim) only in commit messages. Scoped to
+-- gitcommit so the `:` trigger doesn't pollute normal-buffer completion.
+cmp.setup.filetype("gitcommit", {
+    sources = cmp.config.sources({
+        { name = "gitmoji" },
+        { name = "buffer", keyword_length = 3 },
+        { name = "path" },
+    }),
 })

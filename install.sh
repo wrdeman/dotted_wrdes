@@ -77,6 +77,8 @@ install_packages_mac() {
         tig
         lazygit               # git TUI (lazygit.nvim)
         ripgrep               # for Telescope live_grep
+        hurl                  # HTTP client (hurl.nvim)
+        jq                    # JSON formatter for hurl.nvim responses
         ruby
         node                  # for Mason LSP servers
         go
@@ -123,6 +125,7 @@ install_packages_linux() {
         silversearcher-ag
         tig
         ripgrep               # for Telescope live_grep
+        jq                    # JSON formatter for hurl.nvim responses
         ruby
         xclip                 # clipboard support in neovim
         curl
@@ -155,6 +158,7 @@ install_packages_linux() {
 
     install_neovim_linux
     install_lazygit_linux
+    install_hurl_linux
     install_node_linux
     install_nerd_font_linux
     install_pynvim_linux
@@ -262,6 +266,48 @@ install_lazygit_linux() {
         ok "Lazygit ${lg_ver} installed to ~/.local/bin/lazygit"
     else
         warn "Lazygit download failed — install manually from github.com/jesseduffield/lazygit"
+    fi
+    rm -rf "$tmp"
+}
+
+# ── Hurl: Linux install from GitHub releases (not in apt) ──────────────────────
+
+install_hurl_linux() {
+    if has hurl; then
+        ok "Hurl already installed: $(hurl --version | head -1)"
+        return
+    fi
+
+    info "Installing Hurl from GitHub releases..."
+    local hl_ver
+    hl_ver="$(curl -fsSL https://api.github.com/repos/Orange-OpenSource/hurl/releases/latest \
+        | grep '"tag_name"' | cut -d'"' -f4)"
+    if [ -z "$hl_ver" ]; then
+        warn "Could not resolve hurl version — skipping"
+        return
+    fi
+
+    # Release assets use rust target triples; tag has no leading 'v'
+    local triple asset
+    case "$(uname -m)" in
+        x86_64)        triple="x86_64-unknown-linux-gnu" ;;
+        aarch64|arm64) triple="aarch64-unknown-linux-gnu" ;;
+        *) warn "Unsupported arch for hurl: $(uname -m) — skipping"; return ;;
+    esac
+    asset="hurl-${hl_ver#v}-${triple}.tar.gz"
+
+    local tmp
+    tmp="$(mktemp -d)"
+    if curl -fLo "$tmp/hurl.tar.gz" \
+        "https://github.com/Orange-OpenSource/hurl/releases/download/${hl_ver}/${asset}"; then
+        # Tarball top-level dir is hurl-<ver>-<triple>/ with bin/hurl inside
+        tar xzf "$tmp/hurl.tar.gz" -C "$tmp"
+        mkdir -p "$HOME/.local/bin"
+        mv "$tmp/hurl-${hl_ver#v}-${triple}/bin/hurl" "$HOME/.local/bin/hurl"
+        chmod +x "$HOME/.local/bin/hurl"
+        ok "Hurl ${hl_ver} installed to ~/.local/bin/hurl"
+    else
+        warn "Hurl download failed — install manually from github.com/Orange-OpenSource/hurl"
     fi
     rm -rf "$tmp"
 }

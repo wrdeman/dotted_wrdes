@@ -155,7 +155,10 @@ LSP keymaps (buffer-local, set on `LspAttach`):
 ### Completion — nvim-cmp (`cmp.lua`)
 
 Sources: LSP, LuaSnip (friendly-snippets), buffer (≥3 chars), path. Bordered windows, ghost
-text. Menu labels the source (`[LSP]`, `[Snip]`, `[Buf]`, `[Path]`).
+text. Menu labels the source (`[LSP]`, `[Snip]`, `[Buf]`, `[Path]`, `[Emoji]`).
+
+In `gitcommit` buffers a filetype-scoped source set swaps LSP/snippets for **gitmoji** (+ buffer,
+path) — type `:` to complete `:sparkles:` → ✨ (see plugin list).
 
 | Key | Action |
 |-----|--------|
@@ -166,7 +169,7 @@ text. Menu labels the source (`[LSP]`, `[Snip]`, `[Buf]`, `[Path]`).
 
 ### Treesitter (`treesitter.lua`)
 
-Parsers: go, python, lua, bash, latex, vim, vimdoc, json, yaml, toml (`auto_install` on).
+Parsers: go, python, lua, bash, latex, vim, vimdoc, json, yaml, toml, hurl (`auto_install` on).
 Highlight + indent enabled. LaTeX highlighting handled by vimtex, not treesitter.
 Incremental selection: `<C-space>` grow, `<M-space>` shrink, `<C-s>` scope.
 
@@ -271,6 +274,39 @@ otherwise firing one from a non-dart buffer gives `E492`):
 > Like `<leader>f` (conform format) vs `<leader>ff` (telescope), bare `<leader>f` waits
 > `timeoutlen` before firing because `<leader>fl*` shares the prefix.
 
+### Hurl (`jellydn/hurl.nvim`)
+
+Run HTTP requests from `.hurl` files and view responses in a split. Loads on the `hurl`
+filetype. Needs the **`hurl`** binary (pulled in by `install.sh` — brew on macOS, GitHub
+release into `~/.local/bin` on Linux); JSON responses are pretty-printed with **`jq`**.
+Syntax highlighting comes from the `hurl` treesitter parser.
+
+| Key | Action |
+|-----|--------|
+| `<leader>A` | run all requests in the file |
+| `<leader>a` | run the request under the cursor |
+| `<leader>te` | run from start to the entry under the cursor |
+| `<leader>tE` | run from the entry under the cursor to the end |
+| `<leader>tm` | toggle output mode (split / popup) |
+| `<leader>tv` / `<leader>tV` | run verbose / very verbose |
+| `<leader>h` (visual) | run the selected lines |
+
+**Environment variables.** Configured via the `env_file` list in the plugin spec
+(`lua/plugins/init.lua`): `{ "local.private.vars", "vars.env" }`. For each name, the
+plugin walks from the git root **down to the `.hurl` file's own directory** and passes
+every match to `hurl` as `--variables-file`. Two consequences:
+
+- Captures (`access_token`, …) still flow between requests within one run.
+- Multiple matched env files all load and keys collide (last wins, parent over child),
+  so **keep each environment's vars in its own sibling subdir** — e.g. `http/local/`
+  and `http/aDir/`, each holding its own `local.private.vars`. A sibling dir is not in
+  another's ancestor chain, so each `.hurl` resolves only its own vars. Don't leave a
+  second env file in a shared parent dir.
+
+Runtime overrides: `:HurlManageVariable` opens a UI to view/add/edit in-memory vars
+(these beat the env file, per session) — handy for paste-a-code flows; `:HurlSetVariable
+name value` sets one directly; `:HurlSetEnvFile name` switches the active env file name.
+
 ### which-key
 
 Pops up the available `<leader>` bindings after a short delay — no config beyond defaults.
@@ -282,5 +318,6 @@ Pops up the available `<leader>` bindings after a short delay — no config beyo
 - **lualine** statusline (gruvbox theme, single global statusline, branch/diff/diagnostics)
 - **gitsigns** — git signs in the gutter
 - **lazygit.nvim** — `<leader>gg` opens the lazygit TUI in a float (needs the `lazygit` binary, pulled in by `install.sh`)
+- **gitmoji.nvim** — gitmoji completion in `gitcommit` buffers; `:` triggers the nvim-cmp `gitmoji` source (registered per-filetype in `cmp.lua`)
 - **nvim-autopairs** — auto-close brackets/quotes
 - **Comment.nvim** — `gcc` to toggle a line, `gc` in visual mode

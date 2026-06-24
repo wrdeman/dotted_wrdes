@@ -1,5 +1,5 @@
 require("nvim-treesitter.configs").setup({
-    ensure_installed = { "go", "python", "lua", "bash", "latex", "vim", "vimdoc", "json", "yaml", "toml" },
+    ensure_installed = { "go", "python", "lua", "bash", "latex", "vim", "vimdoc", "json", "yaml", "toml", "hurl" },
     sync_install = false,
     auto_install = true,
 
