@@ -69,6 +69,8 @@ nvim/
 │       ├── init.lua      lazy.nvim bootstrap + plugin manifest
 │       ├── lsp.lua       LSP servers + diagnostics
 │       ├── conform.lua   formatters + format-on-save
+│       ├── nvim-lint.lua linters (sqlfluff for SQL)
+│       ├── dadbod.lua    SQL/DB client (dadbod-ui), dotenv connections (see nvim-sql.md)
 │       ├── dap.lua       debugging (DAP) adapters + keymaps
 │       ├── flutter.lua   flutter-tools (dartls + fvm, hot reload, DAP)
 │       ├── cmp.lua       nvim-cmp completion
@@ -93,7 +95,8 @@ nvim/
 | `:Lazy sync` | install/update/clean plugins |
 | `:Lazy` | plugin manager UI |
 | `:Mason` | install/manage LSP servers, formatters, linters |
-| `:MasonToolsUpdate` | update the mason-tool-installer tool list (gofumpt, goimports, stylua, delve, debugpy) |
+| `:MasonToolsUpdate` | update the mason-tool-installer tool list (gofumpt, goimports, stylua, delve, debugpy, sqlfluff) |
+| `:DBUIToggle` | toggle the database drawer (see Database below + nvim-sql.md) |
 | `:ConformInfo` | show conform formatters + their status for the buffer |
 | `:TSUpdate` | update treesitter parsers |
 | `:checkhealth` | diagnose problems |
@@ -129,6 +132,7 @@ Servers (installed by Mason, must stay in sync with `ensure_installed` in `plugi
 - **gopls** — analyses (unusedparams, shadow), staticcheck, gofumpt
 - **pyright** — basic type-checking + hover
 - **ruff** — Python linting + code actions (hover disabled so pyright's wins)
+- **sqls** — SQL completion / go-to-def / hover (defaults; interactive querying is dadbod-ui, see Database)
 - **lua_ls** — configured for editing this config (`vim` global, LuaJIT)
 - **dartls** — set up by **flutter-tools.nvim** (see Flutter below), *not* Mason; comes from the Flutter SDK. Still fires the same `LspAttach` keymaps below.
 
@@ -155,10 +159,12 @@ LSP keymaps (buffer-local, set on `LspAttach`):
 ### Completion — nvim-cmp (`cmp.lua`)
 
 Sources: LSP, LuaSnip (friendly-snippets), buffer (≥3 chars), path. Bordered windows, ghost
-text. Menu labels the source (`[LSP]`, `[Snip]`, `[Buf]`, `[Path]`, `[Emoji]`).
+text. Menu labels the source (`[LSP]`, `[Snip]`, `[Buf]`, `[Path]`, `[Emoji]`, `[DB]`).
 
 In `gitcommit` buffers a filetype-scoped source set swaps LSP/snippets for **gitmoji** (+ buffer,
-path) — type `:` to complete `:sparkles:` → ✨ (see plugin list).
+path) — type `:` to complete `:sparkles:` → ✨ (see plugin list). In `sql`/`plsql` buffers a
+filetype-scoped set adds **vim-dadbod-completion** (`[DB]` — tables/columns from the live
+connection) alongside sqls + snippets (see Database).
 
 | Key | Action |
 |-----|--------|
@@ -169,7 +175,7 @@ path) — type `:` to complete `:sparkles:` → ✨ (see plugin list).
 
 ### Treesitter (`treesitter.lua`)
 
-Parsers: go, python, lua, bash, latex, vim, vimdoc, json, yaml, toml, hurl (`auto_install` on).
+Parsers: go, python, lua, bash, latex, vim, vimdoc, json, yaml, toml, hurl, sql (`auto_install` on).
 Highlight + indent enabled. LaTeX highlighting handled by vimtex, not treesitter.
 Incremental selection: `<C-space>` grow, `<M-space>` shrink, `<C-s>` scope.
 
@@ -213,8 +219,20 @@ Owns `<leader>f` (normal + visual) and **format-on-save**. Per-filetype formatte
 | python | `ruff_organize_imports` → `ruff_format` (replaces black + isort) |
 | go | `goimports` → `gofumpt` |
 | lua | `stylua` |
+| sql | `sqlfluff` (postgres dialect; a project `.sqlfluff` overrides) |
 
 Other filetypes fall back to the LSP formatter (`lsp_format = "fallback"`).
+
+### Linting — nvim-lint (`nvim-lint.lua`)
+
+Lint diagnostics for filetypes without an LSP linter (Python's linting is ruff via its LSP;
+conform owns *formatting*). Lints on `BufReadPost` / `BufWritePost` / `InsertLeave`.
+
+| Filetype | Linter |
+|----------|--------|
+| sql | `sqlfluff lint` (postgres dialect; a project `.sqlfluff` overrides) |
+
+`sqlfluff` is the same binary the conform formatter uses (installed by mason-tool-installer).
 
 ### Debugging — DAP (`dap.lua`)
 
@@ -306,6 +324,27 @@ every match to `hurl` as `--variables-file`. Two consequences:
 Runtime overrides: `:HurlManageVariable` opens a UI to view/add/edit in-memory vars
 (these beat the env file, per session) — handy for paste-a-code flows; `:HurlSetVariable
 name value` sets one directly; `:HurlSetEnvFile name` switches the active env file name.
+
+### Database — vim-dadbod-ui (`dadbod.lua`)
+
+SQL/DB client: `vim-dadbod` + the `vim-dadbod-ui` drawer, `vim-dadbod-completion` (the `[DB]`
+cmp source), and `vim-dotenv`. Loads on the `DBUI*` commands and on `sql`/`plsql` files.
+
+**Connections are defined PER PROJECT in a gitignored `.env`, never in this config** —
+`g:db_ui_dotenv_variable_prefix = "DB_UI_"`, so each `DB_UI_<name>=<url>` line becomes a
+connection named `<name>` (lowercased). `g:dbs` is intentionally unset. A `User DBUIOpened`
+autocmd reads `./.env` and refreshes the drawer, so connections appear automatically when
+nvim is launched from the project root. **Full setup + `.env` format: see `nvim-sql.md`.**
+
+| Key | Mode | Action |
+|-----|------|--------|
+| `<leader>Du` | n | toggle the DBUI drawer (`:DBUIToggle`) |
+| `<leader>Df` | n | find / jump to a DBUI query buffer (`:DBUIFindBuffer`) |
+| `<leader>S` | n, v | execute the query (buffer or selection); buffer-local to sql/plsql |
+
+`sqls` (LSP), `sqlfluff` (conform format + nvim-lint diagnostics, both postgres dialect) and
+the `sql` treesitter parser back the editing experience — see the LSP, Formatting, Linting and
+Treesitter sections.
 
 ### which-key
 

@@ -84,7 +84,13 @@ vim.lsp.config("ruff", {
     end,
 })
 
-vim.lsp.enable({ "gopls", "pyright", "lua_ls", "ruff" })
+-- ── SQL (sqls) ────────────────────────────────────────────────────────────────
+-- Completion, go-to-definition and hover for SQL. DB connections are NOT set
+-- here — interactive querying goes through dadbod-ui (per-project .env, see
+-- nvim-sql.md); sqls runs with its defaults for editing assistance.
+vim.lsp.config("sqls", {})
+
+vim.lsp.enable({ "gopls", "pyright", "lua_ls", "ruff", "sqls" })
 
 -- Note: format + organise-imports on save is handled by conform.nvim
 -- (goimports + gofumpt for Go, ruff for Python) — see plugins/conform.lua.

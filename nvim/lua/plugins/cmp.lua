@@ -58,6 +58,7 @@ cmp.setup({
                 buffer   = "[Buf]",
                 path     = "[Path]",
                 gitmoji  = "[Emoji]",
+                ["vim-dadbod-completion"] = "[DB]",
             }
             item.menu = source_labels[entry.source.name] or ""
             return item
@@ -74,5 +75,19 @@ cmp.setup.filetype("gitcommit", {
         { name = "gitmoji" },
         { name = "buffer", keyword_length = 3 },
         { name = "path" },
+    }),
+})
+
+-- SQL completion (kristijanhusak/vim-dadbod-completion) — table/column/keyword
+-- completion from the live DB connection. The source registers itself when the
+-- plugin loads on sql/plsql filetypes; connections come from the per-project
+-- .env (see nvim-sql.md). nvim_lsp here is sqls.
+cmp.setup.filetype({ "sql", "mysql", "plsql" }, {
+    sources = cmp.config.sources({
+        { name = "vim-dadbod-completion" },
+        { name = "nvim_lsp" },
+        { name = "luasnip" },
+    }, {
+        { name = "buffer", keyword_length = 3 },
     }),
 })

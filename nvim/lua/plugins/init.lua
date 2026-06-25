@@ -29,7 +29,7 @@ require("lazy").setup({
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
-			ensure_installed = { "gopls", "pyright", "lua_ls", "ruff" },
+			ensure_installed = { "gopls", "pyright", "lua_ls", "ruff", "sqls" },
 			automatic_installation = true,
 		},
 	},
@@ -40,7 +40,7 @@ require("lazy").setup({
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
-			ensure_installed = { "gofumpt", "goimports", "stylua", "delve", "debugpy" },
+			ensure_installed = { "gofumpt", "goimports", "stylua", "delve", "debugpy", "sqlfluff" },
 		},
 	},
 
@@ -208,6 +208,17 @@ require("lazy").setup({
 		end,
 	},
 
+	-- Linter runner — sqlfluff for SQL. conform owns formatting; this owns lint
+	-- diagnostics (the role ruff's LSP fills for Python). Loads on file open,
+	-- lints on read/save/insert-leave. Config in plugins/nvim-lint.lua.
+	{
+		"mfussenegger/nvim-lint",
+		event = { "BufReadPre", "BufNewFile" },
+		config = function()
+			require("plugins.nvim-lint")
+		end,
+	},
+
 	-- Debugging (DAP) — breakpoints, stepping, REPL, UI panels
 	{
 		"mfussenegger/nvim-dap",
@@ -314,6 +325,30 @@ require("lazy").setup({
 			{ "<leader>tv", "<cmd>HurlVerbose<cr>", desc = "Hurl run verbose" },
 			{ "<leader>tV", "<cmd>HurlVeryVerbose<cr>", desc = "Hurl run very verbose" },
 			{ "<leader>h", ":HurlRunner<cr>", mode = "v", desc = "Hurl run selection" },
+		},
+	},
+
+	-- Database client — vim-dadbod + the dadbod-ui drawer, a SQL completion
+	-- source (wired into nvim-cmp in plugins/cmp.lua), and vim-dotenv. Connections
+	-- are defined PER PROJECT in a gitignored .env (DB_UI_<name>=<url>), never in
+	-- this config — see nvim-sql.md. The g:db_ui_* globals must be set before the
+	-- plugin loads, so they live in plugins/dadbod.lua loaded from `init` (not
+	-- `config`). Loads on the DBUI commands and on sql/plsql files.
+	{
+		"kristijanhusak/vim-dadbod-ui",
+		dependencies = {
+			{ "tpope/vim-dadbod", lazy = true },
+			{ "tpope/vim-dotenv", lazy = true }, -- reads the project .env for db_ui
+			{ "kristijanhusak/vim-dadbod-completion", ft = { "sql", "mysql", "plsql" }, lazy = true },
+		},
+		cmd = { "DBUI", "DBUIToggle", "DBUIAddConnection", "DBUIFindBuffer" },
+		ft = { "sql", "plsql" },
+		init = function()
+			require("plugins.dadbod")
+		end,
+		keys = {
+			{ "<leader>Du", "<cmd>DBUIToggle<cr>", desc = "Database UI toggle" },
+			{ "<leader>Df", "<cmd>DBUIFindBuffer<cr>", desc = "Database find buffer" },
 		},
 	},
 }, {

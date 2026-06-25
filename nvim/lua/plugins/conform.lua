@@ -6,6 +6,15 @@ conform.setup({
         python = { "ruff_organize_imports", "ruff_format" },
         go     = { "goimports", "gofumpt" },
         lua    = { "stylua" },
+        sql    = { "sqlfluff" },
+    },
+
+    formatters = {
+        -- sqlfluff needs an explicit dialect; default to postgres. A project
+        -- .sqlfluff file still overrides this for project-specific rules.
+        sqlfluff = {
+            args = { "format", "--dialect=postgres", "-" },
+        },
     },
 
     -- Format on save; fall back to the LSP formatter for filetypes with no
