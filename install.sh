@@ -456,10 +456,11 @@ install_python3_venv_shim() {
 #!/usr/bin/env bash
 # python3 venv shim: delegates to uv venv when ensurepip is unavailable.
 # Installed by dotted_wrdes/install.sh; safe to remove once python3-venv is packaged.
+# --seed installs a real pip package into the venv so `python -m pip` works.
 args=("$@")
 for ((i=0; i<${#args[@]}-1; i++)); do
     if [[ "${args[i]}" == "-m" && "${args[i+1]}" == "venv" ]]; then
-        exec uv venv "${args[@]:$((i+2))}"
+        exec uv venv --seed "${args[@]:$((i+2))}"
     fi
 done
 exec /usr/bin/python3 "$@"
