@@ -163,6 +163,8 @@ install_packages_linux() {
     install_hurl_linux
     install_node_linux
     install_nerd_font_linux
+    install_uv_linux
+    install_python3_venv_shim
     install_pynvim_linux
 }
 
@@ -412,6 +414,58 @@ install_node_linux() {
     curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
     sudo apt-get install -y nodejs
     ok "Node.js $(node --version) installed"
+}
+
+# ── uv: Python package/venv manager (solves missing ensurepip on Ubuntu 26.04)
+
+install_uv_linux() {
+    if has uv; then
+        ok "uv already installed: $(uv --version)"
+        return
+    fi
+    info "Installing uv (Python package manager)..."
+    if curl -fsSL https://astral.sh/uv/install.sh | sh; then
+        ok "uv installed to ~/.local/bin"
+    else
+        warn "uv install failed — Mason won't be able to install Python tools (sqlfluff, debugpy)"
+    fi
+}
+
+# ── python3 venv shim: delegates -m venv to uv so Mason works when ensurepip
+#    is unavailable (Ubuntu 26.04 ships Python 3.14 without python3.14-venv) ──
+
+install_python3_venv_shim() {
+    local shim="$HOME/.local/bin/python3"
+
+    if python3 -c "import ensurepip" &>/dev/null 2>&1; then
+        ok "ensurepip available — python3 venv shim not needed"
+        return
+    fi
+    if ! has uv; then
+        warn "uv not found — skipping python3 venv shim (Mason Python tools will fail)"
+        return
+    fi
+    if [ -f "$shim" ] && grep -q "uv venv" "$shim" 2>/dev/null; then
+        ok "python3 venv shim already installed at $shim"
+        return
+    fi
+
+    info "Installing python3 venv shim at $shim (delegates -m venv to uv)..."
+    mkdir -p "$HOME/.local/bin"
+    cat > "$shim" << 'SHIM'
+#!/usr/bin/env bash
+# python3 venv shim: delegates to uv venv when ensurepip is unavailable.
+# Installed by dotted_wrdes/install.sh; safe to remove once python3-venv is packaged.
+args=("$@")
+for ((i=0; i<${#args[@]}-1; i++)); do
+    if [[ "${args[i]}" == "-m" && "${args[i+1]}" == "venv" ]]; then
+        exec uv venv "${args[@]:$((i+2))}"
+    fi
+done
+exec /usr/bin/python3 "$@"
+SHIM
+    chmod +x "$shim"
+    ok "python3 venv shim installed at $shim"
 }
 
 # ── Python neovim provider ────────────────────────────────────────────────────
