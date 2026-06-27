@@ -29,7 +29,9 @@ require("lazy").setup({
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
-			ensure_installed = { "gopls", "pyright", "lua_ls", "ruff", "sqls" },
+			-- ruff is excluded: it's a standalone binary installed by install.sh
+			-- (Mason installs ruff via pip which is not available on this system).
+			ensure_installed = { "gopls", "pyright", "lua_ls", "sqls" },
 			automatic_installation = true,
 		},
 	},

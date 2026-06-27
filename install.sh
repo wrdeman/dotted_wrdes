@@ -82,6 +82,7 @@ install_packages_mac() {
         ruby
         node                  # for Mason LSP servers
         go
+        ruff                  # Python linter/LSP (Mason can't install it without pip)
         # zathura and zathura-pdf-poppler available via brew if needed
         # meld available via: brew install --cask meld
     )
@@ -132,7 +133,6 @@ install_packages_linux() {
         wget
         unzip
         build-essential       # cc/make: treesitter parsers + telescope-fzf-native
-        golang-go             # Mason-installed Go tools: delve, gofumpt, goimports
         fonts-font-awesome
     )
 
@@ -157,6 +157,8 @@ install_packages_linux() {
     fi
 
     install_neovim_linux
+    install_go_linux
+    install_ruff_linux
     install_lazygit_linux
     install_hurl_linux
     install_node_linux
@@ -196,6 +198,83 @@ install_nerd_font_linux() {
     fi
     rm -rf "$tmp"
     warn "Set your terminal's font to 'Hack Nerd Font' so nvim-tree/lualine icons render"
+}
+
+# ── Go: Linux install from golang.org ────────────────────────────────────────
+
+install_go_linux() {
+    local go_bin="$HOME/.local/go/bin/go"
+    if "$go_bin" version &>/dev/null 2>&1; then
+        ok "Go already installed: $("$go_bin" version)"
+        return
+    fi
+
+    info "Installing Go from golang.org..."
+    local go_ver
+    go_ver="$(curl -fsSL 'https://go.dev/dl/?mode=json&include=all' \
+        | python3 -c "import json,sys; d=json.load(sys.stdin); print(next(r['version'] for r in d if r['stable']))" 2>/dev/null)"
+    if [ -z "$go_ver" ]; then
+        warn "Could not resolve Go version — skipping"
+        return
+    fi
+
+    local arch
+    case "$(uname -m)" in
+        x86_64)        arch="amd64" ;;
+        aarch64|arm64) arch="arm64" ;;
+        *) warn "Unsupported arch for Go: $(uname -m) — skipping"; return ;;
+    esac
+
+    local tmp
+    tmp="$(mktemp -d)"
+    if curl -fLo "$tmp/go.tar.gz" \
+        "https://dl.google.com/go/${go_ver}.linux-${arch}.tar.gz"; then
+        rm -rf "$HOME/.local/go"
+        tar xzf "$tmp/go.tar.gz" -C "$HOME/.local"
+        ok "Go ${go_ver} installed to ~/.local/go"
+    else
+        warn "Go download failed — install manually from go.dev/dl"
+    fi
+    rm -rf "$tmp"
+}
+
+# ── Ruff: Linux install from GitHub releases ──────────────────────────────────
+
+install_ruff_linux() {
+    if has ruff; then
+        ok "Ruff already installed: $(ruff --version)"
+        return
+    fi
+
+    info "Installing Ruff from GitHub releases..."
+    local ruff_ver
+    ruff_ver="$(curl -fsSL https://api.github.com/repos/astral-sh/ruff/releases/latest \
+        | grep '"tag_name"' | cut -d'"' -f4)"
+    if [ -z "$ruff_ver" ]; then
+        warn "Could not resolve ruff version — skipping"
+        return
+    fi
+
+    local triple
+    case "$(uname -m)" in
+        x86_64)        triple="x86_64-unknown-linux-gnu" ;;
+        aarch64|arm64) triple="aarch64-unknown-linux-gnu" ;;
+        *) warn "Unsupported arch for ruff: $(uname -m) — skipping"; return ;;
+    esac
+
+    local tmp
+    tmp="$(mktemp -d)"
+    if curl -fLo "$tmp/ruff.tar.gz" \
+        "https://github.com/astral-sh/ruff/releases/download/${ruff_ver}/ruff-${triple}.tar.gz"; then
+        tar xzf "$tmp/ruff.tar.gz" -C "$tmp"
+        mkdir -p "$HOME/.local/bin"
+        mv "$tmp/ruff-${triple}/ruff" "$HOME/.local/bin/ruff"
+        chmod +x "$HOME/.local/bin/ruff"
+        ok "Ruff ${ruff_ver} installed to ~/.local/bin/ruff"
+    else
+        warn "Ruff download failed — install manually from github.com/astral-sh/ruff"
+    fi
+    rm -rf "$tmp"
 }
 
 # ── Neovim: Linux install from GitHub releases ────────────────────────────────
@@ -348,21 +427,32 @@ install_pynvim_mac() {
 }
 
 install_pynvim_linux() {
-    # Ensure pip is available
-    if ! python3 -m pip --version &>/dev/null 2>&1; then
-        info "Installing pip..."
-        python3 -m ensurepip --upgrade 2>/dev/null \
-            || sudo apt-get install -y python3-pip \
-            || warn "Could not install pip"
+    local venv="$HOME/.local/share/nvim/pynvim-venv"
+
+    # Try apt for ensurepip (not available on all distros / Python versions).
+    if ! python3 -c "import ensurepip" &>/dev/null 2>&1; then
+        info "Installing python3-venv..."
+        sudo apt-get install -y python3-venv 2>/dev/null || true
     fi
 
-    if python3 -m pip --version &>/dev/null 2>&1; then
-        info "Installing pynvim..."
-        python3 -m pip install --user --upgrade pynvim || warn "pynvim install failed"
-        ok "pynvim installed"
+    if python3 -c "import ensurepip" &>/dev/null 2>&1; then
+        info "Creating pynvim venv at $venv..."
+        python3 -m venv "$venv" || { warn "venv creation failed"; return; }
+    elif python3 -m venv --help &>/dev/null 2>&1; then
+        # venv works but ensurepip is unavailable; bootstrap pip via get-pip.py.
+        info "Creating pynvim venv (no ensurepip) at $venv..."
+        python3 -m venv --without-pip "$venv" || { warn "venv creation failed"; return; }
+        info "Bootstrapping pip via get-pip.py..."
+        curl -fsSL https://bootstrap.pypa.io/get-pip.py | "$venv/bin/python3" \
+            || { warn "pip bootstrap failed"; return; }
     else
-        warn "pip unavailable — skipping pynvim"
+        warn "No usable venv — skipping pynvim"
+        return
     fi
+
+    info "Installing pynvim..."
+    "$venv/bin/pip" install --upgrade pynvim || warn "pynvim install failed"
+    ok "pynvim installed"
 }
 
 # ── tmuxinator (gem) ──────────────────────────────────────────────────────────

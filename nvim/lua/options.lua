@@ -1,7 +1,31 @@
+-- Ensure Go toolchain and installed binaries are on PATH for Mason installers.
+-- Needed when nvim is launched from a shell that hasn't sourced .zshrc (e.g.
+-- desktop launchers, tmux sessions started before PATH was updated).
+do
+    local home = vim.uv.os_homedir()
+    local extra_paths = {
+        home .. "/.local/bin",   -- nvim, ruff, lazygit, hurl, etc.
+        home .. "/.local/go/bin", -- go toolchain (Mason needs this for Go LSP installs)
+        home .. "/go/bin",        -- go-installed binaries
+    }
+    local path = vim.env.PATH or ""
+    for _, p in ipairs(extra_paths) do
+        if vim.uv.fs_stat(p) and not path:find(p, 1, true) then
+            vim.env.PATH = p .. ":" .. vim.env.PATH
+        end
+    end
+end
+
 -- Disable unused providers (suppresses checkhealth warnings for Perl/Ruby/Node)
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
+
+-- Point the Python provider at the dedicated pynvim venv (created by install.sh)
+local pynvim_python = vim.fn.expand("~/.local/share/nvim/pynvim-venv/bin/python3")
+if vim.uv.fs_stat(pynvim_python) then
+    vim.g.python3_host_prog = pynvim_python
+end
 
 local o = vim.opt
 
