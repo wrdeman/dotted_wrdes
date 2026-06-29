@@ -65,6 +65,14 @@ o.undodir = vim.fn.stdpath("data") .. "/undo"
 o.updatetime = 250
 o.timeoutlen = 300
 
+-- Folding (treesitter-based; native vim.treesitter.foldexpr, Neovim 0.10+)
+o.foldmethod = "expr"
+o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+o.foldtext = "" -- use the folded line's own (treesitter-highlighted) text
+o.foldlevelstart = 99 -- open all folds when a file loads
+o.foldnestmax = 4
+o.foldenable = true
+
 -- Misc
 o.wrap = false
 o.clipboard = "unnamedplus"

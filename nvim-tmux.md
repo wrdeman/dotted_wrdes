@@ -110,6 +110,16 @@ no hlsearch. Splits open right/below. No swap/backup; **persistent undo** under
 
 Filetype overrides: **Go** uses real tabs; **LaTeX** wraps prose (linebreak, no colorcolumn).
 
+**Folding** is treesitter-based (`foldmethod=expr`, `foldexpr=v:lua.vim.treesitter.foldexpr()`).
+Files open fully unfolded (`foldlevelstart=99`), max nesting 4. Uses the native built-in fold keys:
+
+| Key | Action |
+|-----|--------|
+| `za` | toggle fold under cursor |
+| `zR` / `zM` | open / close all folds |
+| `zo` / `zc` | open / close fold under cursor |
+| `zj` / `zk` | jump to next / previous fold |
+
 ### Global keymaps (`keymaps.lua`)
 
 | Key | Action |
