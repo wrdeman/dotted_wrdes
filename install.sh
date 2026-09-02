@@ -76,6 +76,7 @@ install_packages_mac() {
         the_silver_searcher   # ag
         tig
         lazygit               # git TUI (lazygit.nvim)
+        gh                    # GitHub CLI (octo.nvim talks to GitHub through it)
         ripgrep               # for Telescope live_grep
         hurl                  # HTTP client (hurl.nvim)
         jq                    # JSON formatter for hurl.nvim responses
@@ -161,6 +162,7 @@ install_packages_linux() {
     install_ruff_linux
     install_lazygit_linux
     install_hurl_linux
+    install_gh_linux
     install_node_linux
     install_nerd_font_linux
     install_uv_linux
@@ -393,6 +395,48 @@ install_hurl_linux() {
     rm -rf "$tmp"
 }
 
+# ── GitHub CLI: Linux install from GitHub releases (apt version lags badly) ───
+
+install_gh_linux() {
+    if has gh; then
+        ok "GitHub CLI already installed: $(gh --version | head -1)"
+        return
+    fi
+
+    info "Installing GitHub CLI from GitHub releases..."
+    local gh_ver
+    gh_ver="$(curl -fsSL https://api.github.com/repos/cli/cli/releases/latest \
+        | grep '"tag_name"' | cut -d'"' -f4)"
+    if [ -z "$gh_ver" ]; then
+        warn "Could not resolve gh version — skipping"
+        return
+    fi
+
+    # Assets are named without the leading 'v' in the version
+    local arch asset
+    case "$(uname -m)" in
+        x86_64)        arch="amd64" ;;
+        aarch64|arm64) arch="arm64" ;;
+        *) warn "Unsupported arch for gh: $(uname -m) — skipping"; return ;;
+    esac
+    asset="gh_${gh_ver#v}_linux_${arch}.tar.gz"
+
+    local tmp
+    tmp="$(mktemp -d)"
+    if curl -fLo "$tmp/gh.tar.gz" \
+        "https://github.com/cli/cli/releases/download/${gh_ver}/${asset}"; then
+        # Tarball top-level dir is gh_<ver>_linux_<arch>/ with bin/gh inside
+        tar xzf "$tmp/gh.tar.gz" -C "$tmp"
+        mkdir -p "$HOME/.local/bin"
+        mv "$tmp/gh_${gh_ver#v}_linux_${arch}/bin/gh" "$HOME/.local/bin/gh"
+        chmod +x "$HOME/.local/bin/gh"
+        ok "GitHub CLI ${gh_ver} installed to ~/.local/bin/gh"
+    else
+        warn "gh download failed — install manually from github.com/cli/cli"
+    fi
+    rm -rf "$tmp"
+}
+
 # ── Node.js: Linux via NodeSource ─────────────────────────────────────────────
 
 install_node_linux() {
@@ -582,6 +626,11 @@ main() {
     fi
     if $INSTALL_LATEX; then
         warn "LaTeX: vimtex uses latexmk — ensure it is on your PATH after install."
+    fi
+    # octo.nvim drives GitHub entirely through `gh`, so an unauthenticated CLI
+    # means every :Octo command fails. Check both OSes, not just Linux.
+    if has gh && ! gh auth status &>/dev/null; then
+        warn "GitHub CLI is not authenticated — run: gh auth login   (octo.nvim needs it)"
     fi
 }
 

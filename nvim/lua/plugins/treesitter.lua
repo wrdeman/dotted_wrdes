@@ -1,5 +1,8 @@
+-- markdown + markdown_inline are pulled in for octo.nvim: octo buffers register
+-- `markdown` as their parser language (see plugins/octo.lua) so PR/issue bodies
+-- and review comments are highlighted as GitHub-flavoured markdown.
 require("nvim-treesitter").setup({
-    ensure_installed = { "go", "python", "lua", "bash", "latex", "vim", "vimdoc", "json", "yaml", "toml", "hurl", "sql" },
+    ensure_installed = { "go", "python", "lua", "bash", "latex", "vim", "vimdoc", "json", "yaml", "toml", "hurl", "sql", "markdown", "markdown_inline" },
     sync_install = false,
     auto_install = true,
 

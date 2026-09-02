@@ -36,4 +36,7 @@ Neovim plugins auto-install on first launch via lazy.nvim; `:Lazy sync` to updat
 - Match the existing install.sh style: `info`/`ok`/`warn`/`die` helpers for output, `has cmd` for presence checks, guard every step so re-running is safe.
 - Keep changes cross-platform. If something is macOS- or Linux-only, gate it on `$OS` rather than assuming one platform.
 - `Readme.md` is a manual package/font checklist that predates `install.sh`; `install.sh` is the maintained path.
+- Topic docs sit alongside `nvim-tmux.md`: `nvim-sql.md` (dadbod/SQL workflow),
+  `nvim-octo.md` (octo.nvim GitHub review workflow). Update the matching one too when
+  changing that plugin's config.
 - `nvim-tmux.md` documents the Neovim and tmux configs (keymaps, plugins, LSP, options). **Keep it in sync:** whenever you change `.tmux.conf` or anything under `nvim/` (a keymap, plugin, LSP server, option, or vimtex/telescope binding), update `nvim-tmux.md` in the same change.

@@ -71,6 +71,7 @@ nvim/
 │       ├── conform.lua   formatters + format-on-save
 │       ├── nvim-lint.lua linters (sqlfluff for SQL)
 │       ├── dadbod.lua    SQL/DB client (dadbod-ui), dotenv connections (see nvim-sql.md)
+│       ├── octo.lua      GitHub issues/PRs/review via the gh CLI (see nvim-octo.md)
 │       ├── dap.lua       debugging (DAP) adapters + keymaps
 │       ├── flutter.lua   flutter-tools (dartls + fvm, hot reload, DAP)
 │       ├── cmp.lua       nvim-cmp completion
@@ -97,6 +98,8 @@ nvim/
 | `:Mason` | install/manage LSP servers, formatters, linters |
 | `:MasonToolsUpdate` | update the mason-tool-installer tool list (gofumpt, goimports, stylua, delve, debugpy, sqlfluff) |
 | `:DBUIToggle` | toggle the database drawer (see Database below + nvim-sql.md) |
+| `:Octo` | picker of every GitHub action (issues, PRs, review — see GitHub below + nvim-octo.md) |
+| `:checkhealth octo` | verify `gh` is installed and authenticated |
 | `:ConformInfo` | show conform formatters + their status for the buffer |
 | `:TSUpdate` | update treesitter parsers |
 | `:checkhealth` | diagnose problems |
@@ -185,7 +188,9 @@ connection) alongside sqls + snippets (see Database).
 
 ### Treesitter (`treesitter.lua`)
 
-Parsers: go, python, lua, bash, latex, vim, vimdoc, json, yaml, toml, hurl, sql (`auto_install` on).
+Parsers: go, python, lua, bash, latex, vim, vimdoc, json, yaml, toml, hurl, sql, markdown,
+markdown_inline (`auto_install` on). markdown is also registered as the parser for the `octo`
+filetype, so PR/issue bodies highlight as GitHub-flavoured markdown.
 Highlight + indent enabled. LaTeX highlighting handled by vimtex, not treesitter.
 Incremental selection: `<C-space>` grow, `<M-space>` shrink, `<C-s>` scope.
 
@@ -356,6 +361,35 @@ nvim is launched from the project root. **Full setup + `.env` format: see `nvim-
 the `sql` treesitter parser back the editing experience — see the LSP, Formatting, Linting and
 Treesitter sections.
 
+### GitHub — octo.nvim (`octo.lua`)
+
+Issues, PRs and **code review** in-editor. Every API call shells out to the **`gh` CLI**
+(installed by `install.sh`), so auth is whatever `gh auth login` set up — no token in this repo.
+Picker is telescope. Loads on the `Octo` command. `:checkhealth octo` verifies the setup.
+
+| Key | Action |
+|-----|--------|
+| `<leader>oo` | picker of all Octo actions (`:Octo`) |
+| `<leader>op` | list PRs |
+| `<leader>oi` | list issues |
+| `<leader>or` | start a review of the current PR |
+| `<leader>oR` | resume a pending review |
+| `<leader>ov` | submit the review (approve / comment / request changes) |
+| `<leader>on` | GitHub notifications |
+| `<leader>os` | search GitHub |
+
+In-buffer maps are octo's defaults on `<localleader>` — which is **also `<Space>`** here, so
+inside an octo buffer they shadow the same-suffix global maps (`<leader>ca` becomes "add
+comment", `<leader>e` becomes "focus file panel" in a review diff). Buffer-local only. The one
+override in `octo.lua` is **approve PR: `<localleader>pa`** (octo's default `<leader>qa` would
+stall the global `<leader>q` = `:q`).
+
+Review essentials: `<localleader>vs` start (in PR buffer) / submit (in review diff),
+`<localleader>ca` add comment, `<localleader>sa` add suggestion, `:w` sends the comment,
+`]q`/`[q` next/prev file, `]t`/`[t` next/prev thread, `<localleader><space>` mark file viewed,
+then `<C-a>` approve / `<C-m>` comment / `<C-r>` request changes in the submit window.
+**Full workflow + every keymap: see `nvim-octo.md`.**
+
 ### which-key
 
 Pops up the available `<leader>` bindings after a short delay — no config beyond defaults.
@@ -367,6 +401,7 @@ Pops up the available `<leader>` bindings after a short delay — no config beyo
 - **lualine** statusline (gruvbox theme, single global statusline, branch/diff/diagnostics)
 - **gitsigns** — git signs in the gutter
 - **lazygit.nvim** — `<leader>gg` opens the lazygit TUI in a float (needs the `lazygit` binary, pulled in by `install.sh`)
+- **octo.nvim** — GitHub issues/PRs/review on `<leader>o*` (needs an authenticated `gh` — see GitHub above)
 - **gitmoji.nvim** — gitmoji completion in `gitcommit` buffers; `:` triggers the nvim-cmp `gitmoji` source (registered per-filetype in `cmp.lua`)
 - **nvim-autopairs** — auto-close brackets/quotes
 - **Comment.nvim** — `gcc` to toggle a line, `gc` in visual mode

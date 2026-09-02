@@ -183,6 +183,35 @@ require("lazy").setup({
 		opts = {},
 	},
 
+	-- GitHub issues / PRs / code review in-editor. All API calls go through the
+	-- `gh` CLI (install.sh pulls it in) — auth is whatever `gh auth login` set
+	-- up, nothing is stored here. Telescope is the picker. A bare `:Octo` lists
+	-- every action; in-buffer maps are octo's defaults on <localleader> (= Space,
+	-- so they shadow same-suffix global leader maps inside octo buffers only).
+	-- Workflow + full keymap table: nvim-octo.md.
+	{
+		"pwntester/octo.nvim",
+		cmd = "Octo",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-telescope/telescope.nvim",
+			"nvim-tree/nvim-web-devicons",
+		},
+		keys = {
+			{ "<leader>oo", "<cmd>Octo<cr>", desc = "Octo actions" },
+			{ "<leader>op", "<cmd>Octo pr list<cr>", desc = "Octo PR list" },
+			{ "<leader>oi", "<cmd>Octo issue list<cr>", desc = "Octo issue list" },
+			{ "<leader>or", "<cmd>Octo review start<cr>", desc = "Octo review start" },
+			{ "<leader>oR", "<cmd>Octo review resume<cr>", desc = "Octo review resume" },
+			{ "<leader>ov", "<cmd>Octo review submit<cr>", desc = "Octo review submit" },
+			{ "<leader>on", "<cmd>Octo notification list<cr>", desc = "Octo notifications" },
+			{ "<leader>os", "<cmd>Octo search<cr>", desc = "Octo search" },
+		},
+		config = function()
+			require("plugins.octo")
+		end,
+	},
+
 	-- Auto-close brackets/quotes
 	{ "windwp/nvim-autopairs", event = "InsertEnter", config = true },
 
