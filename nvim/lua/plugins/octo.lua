@@ -28,6 +28,15 @@ require("octo").setup({
     ui = { use_signcolumn = false, use_statuscolumn = true },
 
     mappings = {
+        submit_win = {
+            -- Octo's default for comment_review is `<C-m>`, which a terminal
+            -- sends as carriage return — byte-identical to <CR>, so nvim cannot
+            -- tell it from Enter. These maps are normal-mode only, so pressing
+            -- Esc after writing the review body and then hitting Enter would
+            -- submit it with no verdict. Move it somewhere deliberate.
+            comment_review = { lhs = "<C-y>", desc = "comment review (no verdict)", mode = { "n" } },
+        },
+
         pull_request = {
             -- Octo's default for approve_pr is `<leader>qa`, which collides with
             -- the global `<leader>q` (:q) — pressing <space>q in a PR buffer

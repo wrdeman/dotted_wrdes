@@ -94,8 +94,13 @@ comment count on the line.
 Both `ca` and `sa` work in **normal mode** (single line) and **visual mode** (multi-line range) —
 select the lines first to attach the comment to a range.
 
-The comment opens in a scratch buffer. **Type it, then `:w`** — writing the buffer is what
-sends it. `<localleader>cd` deletes the comment under the cursor, `<localleader>ce` shows its
+**How the write works:** in a PR/issue buffer, `<localleader>ca` appends an empty comment
+block *into that same buffer* — type the body there, then `:w`. Octo intercepts the write with
+its own `BufWriteCmd` on `octo://*` and pushes it to GitHub; nothing touches disk. In a review
+diff, `<localleader>ca` opens the comment in a **split**, and `:w` there sends it and folds the
+split back into a thread on the diff line. Either way **`:w` is what sends it** — and
+format-on-save is disabled for `octo` buffers (`conform.lua`) so nothing rewrites your text on
+the way out. `<localleader>cd` deletes the comment under the cursor, `<localleader>ce` shows its
 edit history. `]c` / `[c` walk between comments.
 
 Comments made during a review are **pending** until you submit — `:Octo review comments` lists
@@ -110,6 +115,10 @@ Reactions on any comment: `<localleader>r+` 👍, `<localleader>r-` 👎, `<loca
 
 Two different things, don't mix them up:
 
+Pending comments live **on GitHub as a pending review**, not locally — so closing the review
+tab, or `:q`-ing out by accident, loses nothing. `<leader>oR` (`:Octo review resume`) brings the
+tab back with the comments intact.
+
 **Submit a review** (the one with your pending comments) — `<localleader>vs` from the review
 diff or files panel, or `<leader>ov`. A **submit window** opens for the review body; write it,
 then pick the verdict:
@@ -117,13 +126,21 @@ then pick the verdict:
 | Key | Action |
 |-----|--------|
 | `<C-a>` | **approve** |
-| `<C-m>` | comment (no verdict) |
+| `<C-y>` | comment (no verdict) |
 | `<C-r>` | request changes |
 | `<C-c>` | close without submitting (the draft stays pending) |
+
+These are **normal-mode only**, so Enter is an ordinary newline while you type the body.
+Octo's default for the comment verdict is `<C-m>`, which a terminal sends as carriage return —
+indistinguishable from `<CR>`, so an Esc followed by a stray Enter would submit the review.
+`octo.lua` moves it to `<C-y>` and leaves Enter doing nothing here.
 
 **Approve straight from the PR buffer**, no review needed — `<localleader>pa`.
 (Octo's default for this is `<leader>qa`; it is remapped in `octo.lua` because `<space>q` is
 `:q` here and the two-key prefix would stall it.)
+
+> The two keymap overrides in `octo.lua` are exactly these: **approve PR → `<localleader>pa`**
+> and **comment review → `<C-y>`**. Everything else is octo's default.
 
 `<localleader>vd` **from the review diff or files panel** discards the pending review (in a PR
 buffer that same key removes a reviewer instead — same letters, different window).

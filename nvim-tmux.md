@@ -381,13 +381,14 @@ Picker is telescope. Loads on the `Octo` command. `:checkhealth octo` verifies t
 In-buffer maps are octo's defaults on `<localleader>` — which is **also `<Space>`** here, so
 inside an octo buffer they shadow the same-suffix global maps (`<leader>ca` becomes "add
 comment", `<leader>e` becomes "focus file panel" in a review diff). Buffer-local only. The one
-override in `octo.lua` is **approve PR: `<localleader>pa`** (octo's default `<leader>qa` would
-stall the global `<leader>q` = `:q`).
+overrides in `octo.lua` are **approve PR: `<localleader>pa`** (octo's default `<leader>qa` would
+stall the global `<leader>q` = `:q`) and **comment review: `<C-y>`** (octo's default `<C-m>` is
+byte-identical to Enter, so a stray Enter in the submit window would submit the review).
 
 Review essentials: `<localleader>vs` start (in PR buffer) / submit (in review diff),
 `<localleader>ca` add comment, `<localleader>sa` add suggestion, `:w` sends the comment,
 `]q`/`[q` next/prev file, `]t`/`[t` next/prev thread, `<localleader><space>` mark file viewed,
-then `<C-a>` approve / `<C-m>` comment / `<C-r>` request changes in the submit window.
+then `<C-a>` approve / `<C-y>` comment / `<C-r>` request changes in the submit window.
 **Full workflow + every keymap: see `nvim-octo.md`.**
 
 ### which-key
