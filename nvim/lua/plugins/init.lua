@@ -382,6 +382,61 @@ require("lazy").setup({
 			{ "<leader>Df", "<cmd>DBUIFindBuffer<cr>", desc = "Database find buffer" },
 		},
 	},
+	-- Markdown: in-buffer rendering + browser preview.
+	--
+	-- render-markdown.nvim renders headings, tables, code blocks, callouts and
+	-- checkboxes inline in the buffer (treesitter only, no external deps). It
+	-- manages `conceallevel` per-window itself and un-conceals the cursor line,
+	-- so raw markdown is still editable underneath.
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+		ft = { "markdown" },
+		-- file_types is kept to `markdown` deliberately: octo buffers parse as
+		-- markdown too, and concealing there fights writing PR/issue comments.
+		opts = { file_types = { "markdown" } },
+		keys = {
+			{ "<leader>mr", "<cmd>RenderMarkdown toggle<cr>", ft = "markdown", desc = "Markdown render toggle" },
+		},
+	},
+
+	-- markdown-preview.nvim serves a scroll-synced preview in the browser
+	-- (mermaid + KaTeX included). The preview server is a node app, built at
+	-- install time — node/npx come from install.sh; the browser is opened
+	-- through `open` (macOS) / `xdg-open` (Linux, xdg-utils in install.sh).
+	{
+		"iamcco/markdown-preview.nvim",
+		ft = { "markdown" },
+		cmd = { "MarkdownPreview", "MarkdownPreviewStop", "MarkdownPreviewToggle" },
+		-- Prefer building the bundled app with npx/yarn. The fallback downloads a
+		-- prebuilt binary, but `mkdp#util#install` lives in the plugin's autoload
+		-- dir which is not on the rtp during `build` (E117) — hence the explicit
+		-- `Lazy load` first.
+		build = function(plugin)
+			if vim.fn.executable("npx") == 1 then
+				vim.cmd("!cd " .. plugin.dir .. " && cd app && npx --yes yarn install")
+			else
+				vim.cmd([[Lazy load markdown-preview.nvim]])
+				vim.fn["mkdp#util#install"]()
+			end
+		end,
+		-- The mkdp_* globals are read when the plugin loads, so they must be set
+		-- before that — `init` runs eagerly at startup, `config` would be too late.
+		init = function()
+			-- Required when lazy-loading on `ft`/`cmd`: the plugin can no longer
+			-- work out the filetypes it owns from its own ftplugin.
+			vim.g.mkdp_filetypes = { "markdown" }
+			-- Keep the browser tab when leaving the buffer (default closes it).
+			vim.g.mkdp_auto_close = 0
+			-- Print the preview URL — needed to open it by hand over ssh/tmux.
+			vim.g.mkdp_echo_preview_url = 1
+			vim.g.mkdp_theme = "dark" -- match gruvbox hard contrast
+		end,
+		keys = {
+			{ "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", ft = "markdown", desc = "Markdown preview toggle" },
+		},
+	},
+
 }, {
 	ui = { border = "rounded" },
 	checker = { enabled = false },

@@ -130,6 +130,7 @@ install_packages_linux() {
         jq                    # JSON formatter for hurl.nvim responses
         ruby
         xclip                 # clipboard support in neovim
+        xdg-utils             # xdg-open: markdown-preview.nvim opens the browser through it
         curl
         wget
         unzip

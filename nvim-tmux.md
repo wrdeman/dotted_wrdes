@@ -102,6 +102,7 @@ nvim/
 | `:checkhealth octo` | verify `gh` is installed and authenticated |
 | `:ConformInfo` | show conform formatters + their status for the buffer |
 | `:TSUpdate` | update treesitter parsers |
+| `:Lazy build markdown-preview.nvim` | rebuild the markdown preview server (needs node) |
 | `:checkhealth` | diagnose problems |
 
 ### Options highlights (`options.lua`)
@@ -390,6 +391,35 @@ Review essentials: `<localleader>vs` start (in PR buffer) / submit (in review di
 `]q`/`[q` next/prev file, `]t`/`[t` next/prev thread, `<localleader><space>` mark file viewed,
 then `<C-a>` approve / `<C-y>` comment / `<C-r>` request changes in the submit window.
 **Full workflow + every keymap: see `nvim-octo.md`.**
+
+### Markdown — render-markdown.nvim + markdown-preview.nvim
+
+Two complementary previews, both loading on `markdown` files:
+
+- **render-markdown.nvim** renders the buffer *in place* — headings, tables, code blocks,
+  callouts, checkboxes, list bullets — using treesitter only, no external deps. It manages
+  `conceallevel` per window itself and un-conceals the line under the cursor, so the raw
+  markdown stays editable. `file_types` is pinned to `markdown` on purpose: octo buffers also
+  parse as markdown, and concealing there fights writing PR/issue comments.
+- **markdown-preview.nvim** serves a scroll-synced preview in the **browser**, with mermaid
+  and KaTeX. Its server is a node app built by the lazy `build` hook (`npx --yes yarn install`
+  in the plugin's `app/`), so it needs **node** — `install.sh` installs it. The browser is
+  opened via `open` (macOS) / `xdg-open` (Linux — `xdg-utils` is in the apt list).
+  `mkdp_echo_preview_url = 1` prints the URL, so over ssh/tmux you can open it by hand.
+
+| Key | Action |
+|-----|--------|
+| `<leader>mp` | toggle the browser preview (`:MarkdownPreviewToggle`) |
+| `<leader>mr` | toggle in-buffer rendering (`:RenderMarkdown toggle`) |
+
+Both maps are `ft = "markdown"` in the lazy `keys` specs, so they only exist in markdown
+buffers. `:MarkdownPreview` / `:MarkdownPreviewStop` are the non-toggle forms; the browser tab
+is kept when you leave the buffer (`mkdp_auto_close = 0`).
+
+The `mkdp_*` globals are set in the plugin spec's `init` (they are read at load time, so
+`config` would be too late), and `mkdp_filetypes` is **required** because the plugin is
+lazy-loaded on `ft`/`cmd`. The `markdown` + `markdown_inline` treesitter parsers back both
+plugins (already ensured for octo — see Treesitter).
 
 ### which-key
 
