@@ -84,6 +84,7 @@ install_packages_mac() {
         node                  # for Mason LSP servers
         go
         ruff                  # Python linter/LSP (Mason can't install it without pip)
+        hashicorp/tap/terraform  # terraform CLI (homebrew-core dropped it after the 2023 BSL relicense)
         # zathura and zathura-pdf-poppler available via brew if needed
         # meld available via: brew install --cask meld
     )
@@ -163,6 +164,7 @@ install_packages_linux() {
     install_ruff_linux
     install_lazygit_linux
     install_hurl_linux
+    install_terraform_linux
     install_gh_linux
     install_node_linux
     install_nerd_font_linux
@@ -392,6 +394,48 @@ install_hurl_linux() {
         ok "Hurl ${hl_ver} installed to ~/.local/bin/hurl"
     else
         warn "Hurl download failed — install manually from github.com/Orange-OpenSource/hurl"
+    fi
+    rm -rf "$tmp"
+}
+
+# ── Terraform: Linux install from HashiCorp releases (not on apt or GitHub
+#    releases — HashiCorp ships zips from releases.hashicorp.com; version is
+#    resolved via their checkpoint API since there's no GitHub releases page) ─
+
+install_terraform_linux() {
+    if has terraform; then
+        ok "Terraform already installed: $(terraform version | head -1)"
+        return
+    fi
+
+    info "Installing Terraform from releases.hashicorp.com..."
+    local tf_ver
+    tf_ver="$(curl -fsSL https://checkpoint-api.hashicorp.com/v1/check/terraform \
+        | grep -o '"current_version":"[^"]*"' | cut -d'"' -f4)"
+    if [ -z "$tf_ver" ]; then
+        warn "Could not resolve terraform version — skipping"
+        return
+    fi
+
+    local arch
+    case "$(uname -m)" in
+        x86_64)        arch="amd64" ;;
+        aarch64|arm64) arch="arm64" ;;
+        *) warn "Unsupported arch for terraform: $(uname -m) — skipping"; return ;;
+    esac
+
+    local tmp
+    tmp="$(mktemp -d)"
+    if curl -fLo "$tmp/terraform.zip" \
+        "https://releases.hashicorp.com/terraform/${tf_ver}/terraform_${tf_ver}_linux_${arch}.zip"; then
+        # Zip is flat: LICENSE.txt + terraform at top level, no wrapping dir.
+        unzip -oq "$tmp/terraform.zip" -d "$tmp"
+        mkdir -p "$HOME/.local/bin"
+        mv "$tmp/terraform" "$HOME/.local/bin/terraform"
+        chmod +x "$HOME/.local/bin/terraform"
+        ok "Terraform ${tf_ver} installed to ~/.local/bin/terraform"
+    else
+        warn "Terraform download failed — install manually from releases.hashicorp.com/terraform"
     fi
     rm -rf "$tmp"
 }

@@ -96,7 +96,7 @@ nvim/
 | `:Lazy sync` | install/update/clean plugins |
 | `:Lazy` | plugin manager UI |
 | `:Mason` | install/manage LSP servers, formatters, linters |
-| `:MasonToolsUpdate` | update the mason-tool-installer tool list (gofumpt, goimports, stylua, delve, debugpy, sqlfluff) |
+| `:MasonToolsUpdate` | update the mason-tool-installer tool list (gofumpt, goimports, stylua, delve, debugpy, sqlfluff, tflint) |
 | `:DBUIToggle` | toggle the database drawer (see Database below + nvim-sql.md) |
 | `:Octo` | picker of every GitHub action (issues, PRs, review — see GitHub below + nvim-octo.md) |
 | `:checkhealth octo` | verify `gh` is installed and authenticated |
@@ -147,6 +147,7 @@ Servers (installed by Mason, must stay in sync with `ensure_installed` in `plugi
 - **pyright** — basic type-checking + hover
 - **ruff** — Python linting + code actions (hover disabled so pyright's wins)
 - **sqls** — SQL completion / go-to-def / hover (defaults; interactive querying is dadbod-ui, see Database)
+- **terraformls** — completion, validation and docs for `.tf` / `.tfvars` (defaults; see Terraform support below)
 - **lua_ls** — configured for editing this config (`vim` global, LuaJIT)
 - **dartls** — set up by **flutter-tools.nvim** (see Flutter below), *not* Mason; comes from the Flutter SDK. Still fires the same `LspAttach` keymaps below.
 
@@ -189,9 +190,10 @@ connection) alongside sqls + snippets (see Database).
 
 ### Treesitter (`treesitter.lua`)
 
-Parsers: go, python, lua, bash, latex, vim, vimdoc, json, yaml, toml, hurl, sql, markdown,
-markdown_inline (`auto_install` on). markdown is also registered as the parser for the `octo`
-filetype, so PR/issue bodies highlight as GitHub-flavoured markdown.
+Parsers: go, python, lua, bash, latex, vim, vimdoc, json, yaml, toml, hurl, sql, terraform, hcl,
+markdown, markdown_inline (`auto_install` on). markdown is also registered as the parser for the
+`octo` filetype, so PR/issue bodies highlight as GitHub-flavoured markdown. See Terraform support
+below for how `terraform` also covers `.tfvars`.
 Highlight + indent enabled. LaTeX highlighting handled by vimtex, not treesitter.
 Incremental selection: `<C-space>` grow, `<M-space>` shrink, `<C-s>` scope.
 
@@ -236,6 +238,7 @@ Owns `<leader>f` (normal + visual) and **format-on-save**. Per-filetype formatte
 | go | `goimports` → `gofumpt` |
 | lua | `stylua` |
 | sql | `sqlfluff` (postgres dialect; a project `.sqlfluff` overrides) |
+| terraform / terraform-vars | `terraform_fmt` (`terraform fmt`) |
 
 Other filetypes fall back to the LSP formatter (`lsp_format = "fallback"`).
 
@@ -247,6 +250,7 @@ conform owns *formatting*). Lints on `BufReadPost` / `BufWritePost` / `InsertLea
 | Filetype | Linter |
 |----------|--------|
 | sql | `sqlfluff lint` (postgres dialect; a project `.sqlfluff` overrides) |
+| terraform / terraform-vars | `tflint` (see Terraform support) |
 
 `sqlfluff` is the same binary the conform formatter uses (installed by mason-tool-installer).
 
@@ -307,6 +311,23 @@ otherwise firing one from a non-dart buffer gives `E492`):
 
 > Like `<leader>f` (conform format) vs `<leader>ff` (telescope), bare `<leader>f` waits
 > `timeoutlen` before firing because `<leader>fl*` shares the prefix.
+
+### Terraform support
+
+**terraform-ls** (LSP, see LSP above) and **tflint** (`nvim-lint`, see Linting above) back `.tf` /
+`.tfvars` editing — both are Mason packages (`terraform-ls`, `tflint`), installed automatically.
+**conform** formats both filetypes on save with `terraform fmt` (see Formatting above). Treesitter
+highlighting comes from the `terraform` parser for `.tf`/`.tfvars` (`.tfvars` is filetype
+`terraform-vars`, which nvim-treesitter already maps onto the same parser) and the separate `hcl`
+parser for generic `.hcl` files, e.g. Packer/Nomad/Consul configs (see Treesitter above). Both
+filetypes are detected automatically by Neovim core — no extra `vim.filetype.add` or
+`vim.treesitter.language.register` call lives in this config.
+
+The **`terraform`** CLI itself (needed by `terraform-ls` and the `terraform_fmt` formatter — it is
+not a Mason package) comes from `install.sh`: the `hashicorp/tap/terraform` Homebrew tap formula on
+macOS (homebrew-core dropped plain `terraform` after HashiCorp's 2023 license change), and a direct
+download from `releases.hashicorp.com` into `~/.local/bin` on Linux (version resolved via
+HashiCorp's checkpoint API, since Terraform has no GitHub releases page to scrape).
 
 ### Hurl (`jellydn/hurl.nvim`)
 

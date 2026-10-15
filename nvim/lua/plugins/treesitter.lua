@@ -1,8 +1,12 @@
 -- markdown + markdown_inline are pulled in for octo.nvim: octo buffers register
 -- `markdown` as their parser language (see plugins/octo.lua) so PR/issue bodies
 -- and review comments are highlighted as GitHub-flavoured markdown.
+-- "terraform" also backs .tfvars (filetype terraform-vars — nvim-treesitter's
+-- built-in filetype map already points it at this same parser); "hcl" backs
+-- generic .hcl files (Packer/Nomad/Consul). Both filetypes are detected by
+-- Neovim core out of the box — no vim.filetype.add/register call needed here.
 require("nvim-treesitter").setup({
-    ensure_installed = { "go", "python", "lua", "bash", "latex", "vim", "vimdoc", "json", "yaml", "toml", "hurl", "sql", "markdown", "markdown_inline" },
+    ensure_installed = { "go", "python", "lua", "bash", "latex", "vim", "vimdoc", "json", "yaml", "toml", "hurl", "sql", "terraform", "hcl", "markdown", "markdown_inline" },
     sync_install = false,
     auto_install = true,
 

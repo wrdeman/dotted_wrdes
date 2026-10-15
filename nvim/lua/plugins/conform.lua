@@ -7,6 +7,12 @@ conform.setup({
         go     = { "goimports", "gofumpt" },
         lua    = { "stylua" },
         sql    = { "sqlfluff" },
+        -- terraform_fmt is conform's built-in formatter: shells out to
+        -- `terraform fmt -no-color -` (needs the `terraform` CLI — install.sh).
+        -- terraform-vars is .tfvars' filetype; it needs its own entry here
+        -- since formatters_by_ft doesn't inherit from "terraform".
+        terraform          = { "terraform_fmt" },
+        ["terraform-vars"] = { "terraform_fmt" },
     },
 
     formatters = {

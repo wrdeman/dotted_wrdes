@@ -26,7 +26,7 @@ Neovim plugins auto-install on first launch via lazy.nvim; `:Lazy sync` to updat
 
 **Neovim config (`nvim/`) is modular Lua, loaded in order by `init.lua`:** `options` → `keymaps` → `plugins`.
 - `lua/plugins/init.lua` bootstraps lazy.nvim and is the plugin manifest. Each plugin's `config = function() require("plugins.X") end` points to its own file in `lua/plugins/`. Add a plugin = add a spec here (+ its config file if non-trivial).
-- LSP stack: Mason installs servers; `lua/plugins/lsp.lua` configures them via the new `vim.lsp.config()` / `vim.lsp.enable()` API (not the old `lspconfig.X.setup{}`). Servers wired up: `gopls`, `pyright`, `lua_ls` — the `ensure_installed` list in `init.lua` and the configs in `lsp.lua` must stay in sync. Buffer-local LSP keymaps are set in an `LspAttach` autocmd; Go files format + organise imports on `BufWritePre`.
+- LSP stack: Mason installs servers; `lua/plugins/lsp.lua` configures them via the new `vim.lsp.config()` / `vim.lsp.enable()` API (not the old `lspconfig.X.setup{}`). Servers wired up: `gopls`, `pyright`, `lua_ls`, `sqls`, `terraformls` — the `ensure_installed` list in `init.lua` and the configs in `lsp.lua` must stay in sync. Buffer-local LSP keymaps are set in an `LspAttach` autocmd; Go files format + organise imports on `BufWritePre`.
 - Leader is `<Space>`. Completion is nvim-cmp; fuzzy-finding is Telescope (needs `ripgrep` for live_grep — that's why install.sh pulls it in).
 
 **Shell:** `.zshrc` is oh-my-zsh based and sources `.aliases` (kept separate so aliases/functions live in one place). `lazy-lock.json` pins plugin commits — commit it when intentionally updating plugins.

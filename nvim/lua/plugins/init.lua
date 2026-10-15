@@ -31,18 +31,19 @@ require("lazy").setup({
 		opts = {
 			-- ruff is excluded: it's a standalone binary installed by install.sh
 			-- (Mason installs ruff via pip which is not available on this system).
-			ensure_installed = { "gopls", "pyright", "lua_ls", "sqls" },
+			ensure_installed = { "gopls", "pyright", "lua_ls", "sqls", "terraformls" },
 			automatic_installation = true,
 		},
 	},
 
-	-- Auto-install formatters / debuggers (non-LSP tools Mason doesn't pull via
-	-- mason-lspconfig). Keep this list in sync with conform.lua + dap.lua.
+	-- Auto-install formatters / linters / debuggers (non-LSP tools Mason doesn't
+	-- pull via mason-lspconfig). Keep this list in sync with conform.lua +
+	-- nvim-lint.lua + dap.lua.
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
-			ensure_installed = { "gofumpt", "goimports", "stylua", "delve", "debugpy", "sqlfluff" },
+			ensure_installed = { "gofumpt", "goimports", "stylua", "delve", "debugpy", "sqlfluff", "tflint" },
 		},
 	},
 

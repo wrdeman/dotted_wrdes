@@ -96,9 +96,16 @@ vim.lsp.config("ruff", {
 -- nvim-sql.md); sqls runs with its defaults for editing assistance.
 vim.lsp.config("sqls", {})
 
+-- ── Terraform ────────────────────────────────────────────────────────────────
+-- terraform-ls: completion, validation and docs for .tf/.tfvars (nvim-lspconfig's
+-- default filetypes/root_markers are already correct — no overrides needed).
+-- Mason package name is "terraform-ls" (see init.lua); the terraform CLI binary
+-- itself is installed by install.sh, not Mason.
+vim.lsp.config("terraformls", {})
+
 -- ── Enable servers ────────────────────────────────────────────────────────────
 
-vim.lsp.enable({ "gopls", "pyright", "lua_ls", "ruff", "sqls" })
+vim.lsp.enable({ "gopls", "pyright", "lua_ls", "ruff", "sqls", "terraformls" })
 
 -- Note: format + organise-imports on save is handled by conform.nvim
 -- (goimports + gofumpt for Go, ruff for Python) — see plugins/conform.lua.
