@@ -20,3 +20,12 @@ rmd () {
 frm () {
     $(find . -name '"*.'$1'"')
 }
+
+# attach-or-create a tmux session named after the repo/dir (one session per repo,
+# so agent output and layout persist across detach/reattach and dropped ssh)
+agent () {
+    local dir="${1:-$PWD}"
+    local name
+    name="$(basename "$dir" | tr '.:' '-')"
+    tmux new-session -A -s "$name" -c "$dir"
+}

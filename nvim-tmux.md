@@ -9,8 +9,9 @@ symlinked into place by `install.sh` (`~/.config/nvim` and `~/.tmux.conf`).
 
 ## tmux (`.tmux.conf`)
 
-Default shell is `/bin/zsh`. `tmux-256color` + truecolor, 50 000-line scrollback, vi-style
-copy mode.
+Default shell is `/bin/zsh`. `tmux-256color` + truecolor, 100 000-line scrollback, vi-style
+copy mode, mouse on. `escape-time` is 10ms (default 500ms stalls Esc inside vim/agent TUIs).
+Windows/panes are numbered from 1 (keyboard-matching) and renumber as windows close.
 
 ### Prefix
 
@@ -20,7 +21,7 @@ copy mode.
 |-----|--------|
 | `C-z` | prefix |
 | `C-z C-z` | last window |
-| `C-z r` | reload `~/.tmux.conf` |
+| `C-z r` | reload `~/.tmux.conf` (confirms with a status message) |
 | `C-z Space` | next window |
 
 ### Pane navigation (vim-aware)
@@ -52,6 +53,27 @@ The block at the top enables `allow-passthrough` (desktop notifications + progre
 `extended-keys` (Shift+Enter ≠ Enter), and `RGB`/`extkeys` terminal features.
 **Do not** re-enable the commented `smcup@:rmcup@` override — it disables the alternate
 screen and breaks Claude Code fullscreen rendering and nvim's alt-screen.
+
+### Working with agents
+
+- **`allow-rename off` + `automatic-rename off`** — an agent CLI writing to the terminal
+  title can't steal your window name, so a window named for its task (`api`, `auth`) stays
+  that way.
+- **`monitor-activity on` / `monitor-silence 30`** — windows with new output, or that have
+  gone quiet for 30s (an agent likely finished or is waiting on you), flag in the status
+  line. `visual-activity off` / `visual-silence on` keep the activity flag silent but show
+  the silence one — tmux can't tell "done" from "stuck", so always check the pane.
+- **`aggressive-resize on`** — keeps panes usable when the same session is attached from
+  two places (e.g. local + `ssh box -t tmux new-session -A -s agents`) at different
+  terminal sizes.
+- **One session per repo, one window per task.** `agent` (in `.aliases`) attaches to a
+  session named after a directory, creating it if needed:
+  `agent` (current dir) or `agent ~/code/api`. Re-running it reattaches — safe after a
+  dropped ssh connection, since the session and its scrollback survive detach (not
+  `kill-session`/`kill-server`/reboot).
+- **Reading agent output without attaching:** `tmux capture-pane -p -J -S -200 -t <target>`
+  dumps the last 200 lines (`-J` rejoins wrapped lines); `pipe-pane -o -t <target> 'cat >>
+  file.log'` tees a pane to a file continuously (run again to toggle off).
 
 ---
 
