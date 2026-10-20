@@ -41,3 +41,4 @@ Neovim plugins auto-install on first launch via lazy.nvim; `:Lazy sync` to updat
   waybar). Update the matching one too when changing that plugin's or `sway/`/`waybar/`
   config.
 - `nvim-tmux.md` documents the Neovim and tmux configs (keymaps, plugins, LSP, options). **Keep it in sync:** whenever you change `.tmux.conf` or anything under `nvim/` (a keymap, plugin, LSP server, option, or vimtex/telescope binding), update `nvim-tmux.md` in the same change.
+- `terraform-1password.md` documents the `tfp`/`tfa` shell functions (`.aliases`): a 1Password-vault-driven AWS SSO login + `terraform plan`/`apply` workflow, portable across projects. Keep it in sync with changes to those functions.

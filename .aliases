@@ -29,3 +29,69 @@ agent () {
     name="$(basename "$dir" | tr '.:' '-')"
     tmux new-session -A -s "$name" -c "$dir"
 }
+
+# Terraform + 1Password workflow (see terraform-1password.md for vault schema
+# and how to set up a new project). Run from inside the terraform project dir.
+_tf_1p_secrets () {
+    local vault="$1" title value
+    for title in ${(f)"$(op item list --vault "$vault" --format=json | jq -r '.[].title | select(startswith("TF_VAR_"))')"}; do
+        value="$(op read "op://${vault}/${title}/credential")" || { echo "could not read ${title} from ${vault}" >&2; return 1; }
+        export "${title}=${value}"
+        echo "exported ${title} from 1Password"
+    done
+}
+
+# tfp <vault> [env] — AWS SSO login for <env>'s accounts (if given), export
+# TF_VAR_* secrets from the vault, then terraform plan + visualize.
+tfp () {
+    local vault="$1" env="$2"
+    if [ -z "$vault" ]; then
+        echo "usage: tfp <vault> [env]" >&2
+        return 1
+    fi
+    command -v op >/dev/null || { echo "1Password CLI (op) not found" >&2; return 1; }
+
+    if [ -n "$env" ]; then
+        local accts entry acct profile
+        accts="$(op item get AWS_ACCOUNTS --vault "$vault" --fields "label=$env" --reveal 2>/dev/null)"
+        if [ -z "$accts" ]; then
+            echo "no '$env' field on AWS_ACCOUNTS in vault '$vault'" >&2
+            return 1
+        fi
+        for entry in ${(s: :)accts}; do
+            acct="${entry%%:*}"
+            profile="${entry#*:}"
+            [ "$profile" = "$entry" ] && profile="AWSAdministratorAccess-${acct}"
+            echo "\nLogging in to ${acct} as profile '${profile}'\n"
+            aws sso login --profile "$profile" || return 1
+        done
+        export TF_WORKSPACE="$env"
+    fi
+
+    _tf_1p_secrets "$vault" || return 1
+
+    terraform plan -out=plan.out && terraform show -json plan.out > plan.json
+    if command -v terraform-visual >/dev/null; then
+        terraform-visual --plan plan.json && open terraform-visual-report/index.html
+    else
+        echo "terraform-visual not installed — skipping plan visualization" >&2
+    fi
+}
+
+# tfa <vault> — re-export TF_VAR_* secrets, then apply the plan.out from tfp.
+tfa () {
+    local vault="$1" ans
+    if [ -z "$vault" ]; then
+        echo "usage: tfa <vault>" >&2
+        return 1
+    fi
+    [ -f plan.out ] || { echo "plan.out missing, run tfp first" >&2; return 1; }
+    command -v op >/dev/null || { echo "1Password CLI (op) not found" >&2; return 1; }
+
+    _tf_1p_secrets "$vault" || return 1
+
+    echo -n "Apply plan.out to workspace '${TF_WORKSPACE:-default}'? Type 'yes': "
+    read ans
+    [ "$ans" = "yes" ] || { echo "Aborted"; return 1; }
+    terraform apply plan.out
+}
