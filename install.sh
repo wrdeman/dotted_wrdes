@@ -145,7 +145,9 @@ install_packages_linux() {
     # i3 desktop (Linux-only)
     if [[ "${DISPLAY:-}" != "" ]] || [[ "${WAYLAND_DISPLAY:-}" != "" ]]; then
         info "Graphical session detected — installing i3 environment..."
-        sudo apt-get install -y i3 i3blocks compton rofi zathura || warn "i3 packages failed"
+        sudo apt-get install -y i3 i3blocks i3lock xss-lock picom rofi feh scrot \
+            x11-xserver-utils network-manager-gnome zathura \
+            || warn "i3 packages failed"
     else
         warn "No display detected — skipping i3/zathura install"
     fi
@@ -633,7 +635,6 @@ install_links() {
     if [[ "$OS" == "Linux" ]]; then
         symlink "$DOTFILES/i3/config"              "$HOME/.config/i3/config"
         symlink "$DOTFILES/i3blocks/i3blocks.conf" "$HOME/.config/i3blocks/i3blocks.conf"
-        symlink "$DOTFILES/compton"                "$HOME/.config/compton"
     fi
 
     # Ensure ~/.local/bin is in PATH (Linux: nvim lives here)

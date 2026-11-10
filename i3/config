@@ -1,7 +1,8 @@
 # i3 config file (v4)
 #
-# Please see http://i3wm.org/docs/userguide.html for a complete reference!
-#
+# Please see https://i3wm.org/docs/userguide.html for a complete reference!
+
+set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
 font pango:DejaVu Sans Mono, awesome 16
@@ -13,134 +14,129 @@ set $down k
 set $left h
 set $right l
 
-
-set $bg-color             #2f343f
+set $bg-color            #2f343f
 set $inactive-bg-color   #2f343f
 set $text-color          #f3f4f5
 set $inactive-text-color #676E7D
 set $urgent-bg-color     #E53935
+set $accent-color        #9575cd
 
 # window colors
 # #                       border              background         text                 indicator
 client.focused          $bg-color           $bg-color          $text-color          #00ff00
-client.unfocused        $inactive-bg-color $inactive-bg-color $inactive-text-color #00ff00
-client.focused_inactive $inactive-bg-color $inactive-bg-color $inactive-text-color #00ff00
+client.unfocused        $inactive-bg-color  $inactive-bg-color $inactive-text-color #00ff00
+client.focused_inactive $inactive-bg-color  $inactive-bg-color $inactive-text-color #00ff00
 client.urgent           $urgent-bg-color    $urgent-bg-color   $text-color          #00ff00
 
-for_window [class="^.*"] border pixel 5
+default_border          pixel 5
+default_floating_border pixel 5
 
-new_window 1pixel
+# Use Mouse+$mod to drag floating windows
+floating_modifier $mod
 
 # start a terminal
-bindsym Mod4+Return exec i3-sensible-terminal
+bindsym $mod+Return exec i3-sensible-terminal
 
 # kill focused window
-bindsym Mod4+Shift+q kill
+bindsym $mod+Shift+q kill
 
-bindsym Mod4+d exec rofi -show run -lines 5 -width 50 -padding 20 -opacity "90" -bw 0 -bc "$bg-color" -bg "$bg-color" -fg "$text-color" -hlbg "$bg-color" -hlfg "#9575cd" -font "pango:DejaVu Sans Mono 12" 
+# launcher: apps (drun) / any command on $PATH (run)
+set $rofi rofi -theme Arc-Dark -theme-str 'window {width: 50%;} listview {lines: 5;}' -font "DejaVu Sans Mono 12"
+bindsym $mod+d       exec --no-startup-id $rofi -show drun -show-icons
+bindsym $mod+Shift+d exec --no-startup-id $rofi -show run
 
-bindsym Control+mod1+l exec i3lock -c 000000 -n
-
-# border on, see where focus is
-# bindsym $mod+semicolon exec i3-msg border pixel 3
-# bindsym --release $mod+semicolon exec i3-msg border pixel 0
+# lock screen (also locks automatically on suspend via xss-lock below)
+bindsym Control+Mod1+l exec --no-startup-id loginctl lock-session
 
 # change focus
-bindsym Mod4+$left focus left
-bindsym Mod4+$down focus down
-bindsym Mod4+$up focus up
-bindsym Mod4+$right focus right
+bindsym $mod+$left  focus left
+bindsym $mod+$down  focus down
+bindsym $mod+$up    focus up
+bindsym $mod+$right focus right
 
 # move focused window
-bindsym Mod4+Shift+$left move left
-bindsym Mod4+Shift+$down move down
-bindsym Mod4+Shift+$up move up
-bindsym Mod4+Shift+$right move right
+bindsym $mod+Shift+$left  move left
+bindsym $mod+Shift+$down  move down
+bindsym $mod+Shift+$up    move up
+bindsym $mod+Shift+$right move right
 
 # split in horizontal orientation
-bindsym Mod4+semicolon split h
+bindsym $mod+semicolon split h
 
 # split in vertical orientation
-bindsym Mod4+v split v
+bindsym $mod+v split v
 
 # enter fullscreen mode for the focused container
-bindsym Mod4+f fullscreen toggle
+bindsym $mod+f fullscreen toggle
 
 # change container layout (stacked, tabbed, toggle split)
-bindsym Mod4+s layout stacking
-bindsym Mod4+w layout tabbed
-bindsym Mod4+e layout toggle split
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
 
 # toggle tiling / floating
-bindsym Mod4+Shift+space floating toggle
+bindsym $mod+Shift+space floating toggle
 
 # change focus between tiling / floating windows
-bindsym Mod4+space focus mode_toggle
+bindsym $mod+space focus mode_toggle
 
 # focus the parent container
-bindsym Mod4+a focus parent
-
-# focus the child container
-#bindsym Mod4+d focus child
+bindsym $mod+a focus parent
 
 # move the currently focused window to the scratchpad
-bindsym Mod4+Shift+minus move scratchpad
+bindsym $mod+Shift+minus move scratchpad
 
 # Show the next scratchpad window or hide the focused scratchpad window.
 # If there are multiple scratchpad windows, this command cycles through them.
-bindsym Mod4+minus scratchpad show
+bindsym $mod+minus scratchpad show
 
 # switch to workspace
-bindsym Mod4+1 workspace 1
-bindsym Mod4+2 workspace 2
-bindsym Mod4+3 workspace 3
-bindsym Mod4+4 workspace 4
-bindsym Mod4+5 workspace 5
-bindsym Mod4+6 workspace 6
-bindsym Mod4+7 workspace 7
-bindsym Mod4+8 workspace 8
-bindsym Mod4+9 workspace 9
-bindsym Mod4+0 workspace 10
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
 
 # move focused container to workspace
-bindsym Mod4+Shift+1 move container to workspace 1
-bindsym Mod4+Shift+2 move container to workspace 2
-bindsym Mod4+Shift+3 move container to workspace 3
-bindsym Mod4+Shift+4 move container to workspace 4
-bindsym Mod4+Shift+5 move container to workspace 5
-bindsym Mod4+Shift+6 move container to workspace 6
-bindsym Mod4+Shift+7 move container to workspace 7
-bindsym Mod4+Shift+8 move container to workspace 8
-bindsym Mod4+Shift+9 move container to workspace 9
-bindsym Mod4+Shift+0 move container to workspace 10
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
 
-bindsym Mod4+Shift+greater move container to output right
-bindsym Mod4+Shift+less move container to output left
-
-# force floating for all new windows
-# for_window [class="[.]*"] floating enable
+# move focused container to another monitor
+bindsym $mod+Shift+greater move container to output right
+bindsym $mod+Shift+less    move container to output left
 
 # gimp
 assign [class="Gimp"] gimp
 for_window [title="GIMP Startup"] move workspace gimp
 for_window [window_role="gimp-toolbox"] floating disable; layout stacking; move left; resize shrink right 31px or 31 ppt
 
+# dialogs and pop-ups float
+for_window [window_role="pop-up"]       floating enable
+for_window [window_role="task_dialog"]  floating enable
+for_window [window_type="dialog"]       floating enable
 
 # reload the configuration file
-bindsym Mod4+Shift+c reload
+bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym Mod4+Shift+r restart
+bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-bindsym Mod4+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
-        # These bindings trigger as soon as you enter the resize mode
-
-        # Pressing left will shrink the window’s width.
-        # Pressing right will grow the window’s width.
-        # Pressing up will shrink the window’s height.
-        # Pressing down will grow the window’s height.
         bindsym $left       resize shrink width 10 px or 10 ppt
         bindsym $down       resize grow height 10 px or 10 ppt
         bindsym $up         resize shrink height 10 px or 10 ppt
@@ -155,18 +151,18 @@ mode "resize" {
         # back to normal: Enter or Escape
         bindsym Return mode "default"
         bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
 }
 
-bindsym Mod4+r mode "resize"
+bindsym $mod+r mode "resize"
 
-# Start i3bar to display a workspace bar (plus the system information i3status
-# finds out, if available)
 bar {
         status_command i3blocks -c ~/.config/i3blocks/i3blocks.conf
         position top
+        tray_output primary
         colors {
             background $bg-color
-            separator #757575
+            separator  #757575
             # border             background         text
             focused_workspace  $bg-color          $bg-color          $text-color
             inactive_workspace $inactive-bg-color $inactive-bg-color $inactive-text-color
@@ -174,32 +170,32 @@ bar {
        }
 }
 
-# Volume
-bindsym Mod4+Control+Left exec amixer -D pulse sset Master 5%-
-bindsym Mod4+Control+Down exec amixer -D pulse sset Master toggle
-bindsym Mod4+Control+Up exec amixer -D pulse sset Master 5%+
-bindsym Mod4+Control+Right exec amixer -D pulse sset Master 5%+
+# Volume (PipeWire via wpctl); signal 10 refreshes the i3blocks volume block
+set $sink @DEFAULT_AUDIO_SINK@
+set $refresh_vol pkill -RTMIN+10 i3blocks
+bindsym $mod+Control+Left    exec --no-startup-id wpctl set-volume $sink 5%- && $refresh_vol
+bindsym $mod+Control+Right   exec --no-startup-id wpctl set-volume -l 1.0 $sink 5%+ && $refresh_vol
+bindsym $mod+Control+Up      exec --no-startup-id wpctl set-volume -l 1.0 $sink 5%+ && $refresh_vol
+bindsym $mod+Control+Down    exec --no-startup-id wpctl set-mute $sink toggle && $refresh_vol
+bindsym XF86AudioLowerVolume exec --no-startup-id wpctl set-volume $sink 5%- && $refresh_vol
+bindsym XF86AudioRaiseVolume exec --no-startup-id wpctl set-volume -l 1.0 $sink 5%+ && $refresh_vol
+bindsym XF86AudioMute        exec --no-startup-id wpctl set-mute $sink toggle && $refresh_vol
+bindsym XF86AudioMicMute     exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
 # Lazy shortcuts
-bindsym Mod4+c exec chromium-browser
-bindsym Mod4+i exec firefox
-bindsym Mod4+Shift+s exec spotify
+bindsym $mod+c       exec google-chrome
+bindsym $mod+i       exec firefox
+bindsym $mod+Shift+s exec spotify
 
-bindsym Mod4+Print exec scrot -u '%Y%m%d_%H%M%S.png' -s -e 'mv $f ~/Pictures/' 
-bindsym Ctrl+Print exec scrot -u '%Y%m%d_%H%M%S.png' -e 'mv $f ~/Pictures/'
+# Screenshots → ~/Pictures ($mod+Print: select a region/window, Ctrl+Print: whole screen)
+bindsym --release $mod+Print exec --no-startup-id scrot -s '%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures && mv $f ~/Pictures/'
+bindsym Ctrl+Print           exec --no-startup-id scrot '%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures && mv $f ~/Pictures/'
 
-#######################################################################
-# automatically start i3-config-wizard to offer the user to create a
-# keysym-based config which used their favorite modifier (alt or windows)
-#
-# i3-config-wizard will not launch if there already is a config file
-# in
-#
-# Please remove the following exec line:
-#######################################################################
-exec i3-config-wizard
-exec_always --no-startup-id "killall -q compton; compton --config ~/.config/compton/compton.conf"
-exec --no-startup-id feh --bg-scale /usr/share/backgrounds/ubuntu-default-greyscale-wallpaper.png
+# Autostart
+exec_always --no-startup-id "pkill -x picom; picom -b"
+# wallpaper: drop an image at ~/.wallpaper, else fall back to a solid colour
+exec_always --no-startup-id sh -c 'feh --no-fehbg --bg-fill ~/.wallpaper 2>/dev/null || xsetroot -solid "#2f343f"'
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork -c 000000
+exec --no-startup-id nm-applet
 # exec --no-startup-id xrandr --output DP-1-2 --scale 2x2 --pos 3200x0 --panning 3840x2160+3200+0
 # exec --no-startup-id xrandr --output DP-1-1 --scale 2x2 --pos 3200x0 --panning 3840x2160+3200+0
-exec --no-startup-id nm-applet
