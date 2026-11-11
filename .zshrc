@@ -106,6 +106,36 @@ export SSH_KEY_PATH="~/.ssh/rsa_id"
 export PIPENV_VENV_IN_PROJECT=1
 source ~/.aliases
 
+# Machine/company-specific overrides (secrets, vault names, etc.) — not
+# tracked by this repo. Define _local_op_creds here to back _tf_token below.
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
 # Use neovim as default editor (Claude Code ctrl-g)
 export EDITOR=nvim
 export VISUAL=nvim
+
+# direnv (per-project .envrc support)
+eval "$(direnv hook zsh)"
+
+# Machine/company-specific aliases — not tracked by this repo.
+[[ -f ~/.okko_aliases ]] && source ~/.okko_aliases
+
+# ---- shared helpers ------------------------------------------------------
+
+_tf_token() {
+  emulate -L zsh
+  (( $+functions[_local_op_creds] )) || {
+    print -u2 "tf: _local_op_creds not defined — add it to ~/.zshrc.local"
+    return 1
+  }
+  _local_op_creds
+}
+
+alias ctop='TERM=xterm-256color ctop'
+
+# bun completions
+[ -s "/Users/simonosborne/.bun/_bun" ] && source "/Users/simonosborne/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
