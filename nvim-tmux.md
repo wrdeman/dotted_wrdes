@@ -205,7 +205,7 @@ Servers (installed by Mason, must stay in sync with `ensure_installed` in `plugi
 - **pyright** — basic type-checking + hover
 - **ruff** — Python linting + code actions (hover disabled so pyright's wins)
 - **sqls** — SQL completion / go-to-def / hover (defaults; interactive querying is dadbod-ui, see Database)
-- **terraformls** — completion, validation and docs for `.tf` / `.tfvars` (defaults; see Terraform support below)
+- **terraformls** — completion, validation and docs for `.tf` / `.tfvars` (defaults, except `on_attach` — see Terraform support below)
 - **lua_ls** — configured for editing this config (`vim` global, LuaJIT)
 - **dartls** — set up by **flutter-tools.nvim** (see Flutter below), *not* Mason; comes from the Flutter SDK. Still fires the same `LspAttach` keymaps below.
 
@@ -308,9 +308,14 @@ conform owns *formatting*). Lints on `BufReadPost` / `BufWritePost` / `InsertLea
 | Filetype | Linter |
 |----------|--------|
 | sql | `sqlfluff lint` (postgres dialect; a project `.sqlfluff` overrides) |
-| terraform / terraform-vars | `tflint` (see Terraform support) |
+| terraform | `tflint`, `checkov` (see Terraform support) |
+| terraform-vars | `tflint` |
 
 `sqlfluff` is the same binary the conform formatter uses (installed by mason-tool-installer).
+`checkov` is terraform-only — scans the current file (`checkov -f`) for IaC misconfigurations
+(security groups, unencrypted storage, etc.); findings surface as `WARN` diagnostics (checkov's
+free tier reports no severity) with the check ID + name as the message. Not a Mason package —
+see Terraform support below for how the binary gets installed.
 
 ### Debugging — DAP (`dap.lua`)
 
@@ -386,6 +391,15 @@ not a Mason package) comes from `install.sh`: the `hashicorp/tap/terraform` Home
 macOS (homebrew-core dropped plain `terraform` after HashiCorp's 2023 license change), and a direct
 download from `releases.hashicorp.com` into `~/.local/bin` on Linux (version resolved via
 HashiCorp's checkpoint API, since Terraform has no GitHub releases page to scrape).
+
+**`checkov`** (IaC security scanning, see Linting above) is also not a Mason package — there's no
+registry entry for it. `install.sh` installs it via the `checkov` Homebrew formula on macOS, and
+`uv tool install checkov` on Linux (needs `uv`, already installed for Mason's Python tools).
+
+terraformls's `on_attach` is overridden in `lsp.lua` (not left as nvim-lspconfig's default): the
+bundled default calls `vim.lsp.codelens.enable()`, which doesn't exist before Neovim 0.12 and
+throws `ON_ATTACH_ERROR` on this config's Neovim 0.11.2. The override guards for `.enable` and
+falls back to refreshing codelens on `BufEnter`/`CursorHold`/`InsertLeave` when it's absent.
 
 ### Hurl (`jellydn/hurl.nvim`)
 

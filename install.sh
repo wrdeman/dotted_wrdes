@@ -85,6 +85,7 @@ install_packages_mac() {
         go
         ruff                  # Python linter/LSP (Mason can't install it without pip)
         hashicorp/tap/terraform  # terraform CLI (homebrew-core dropped it after the 2023 BSL relicense)
+        checkov               # terraform IaC security scanner (nvim-lint, see nvim-lint.lua)
         # zathura and zathura-pdf-poppler available via brew if needed
         # meld available via: brew install --cask meld
     )
@@ -174,6 +175,7 @@ install_packages_linux() {
     install_uv_linux
     install_python3_venv_shim
     install_pynvim_linux
+    install_checkov_linux
 }
 
 # ── Nerd Font (devicon glyphs for nvim-tree / lualine) ────────────────────────
@@ -600,6 +602,21 @@ install_pynvim_linux() {
     info "Installing pynvim..."
     "$venv/bin/pip" install --upgrade pynvim || warn "pynvim install failed"
     ok "pynvim installed"
+}
+
+# ── checkov: Linux install via uv (no apt/Mason package) ─────────────────────
+
+install_checkov_linux() {
+    if has checkov; then
+        ok "checkov already installed: $(checkov --version)"
+        return
+    fi
+    if ! has uv; then
+        warn "uv not found — skipping checkov (terraform IaC scanning in nvim-lint)"
+        return
+    fi
+    info "Installing checkov via uv tool..."
+    uv tool install checkov || warn "checkov install failed"
 }
 
 # ── tmuxinator (gem) ──────────────────────────────────────────────────────────
