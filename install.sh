@@ -648,6 +648,7 @@ install_links() {
     # ~/.config/ entries (absolute symlinks matching existing style)
     symlink "$DOTFILES/nvim"            "$HOME/.config/nvim"
     symlink "$DOTFILES/zathura/zathurarc" "$HOME/.config/zathura/zathurarc"
+    symlink "$DOTFILES/ghostty/config"   "$HOME/.config/ghostty/config"
 
     # Linux-only
     if [[ "$OS" == "Linux" ]]; then
