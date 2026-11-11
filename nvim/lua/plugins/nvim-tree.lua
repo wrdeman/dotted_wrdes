@@ -20,7 +20,7 @@ require("nvim-tree").setup({
     },
     filters = {
         dotfiles = false,   -- show hidden files by default
-        custom   = { ".git", "node_modules", "__pycache__", ".mypy_cache" },
+        custom   = { "^%.git$", "node_modules", "__pycache__", ".mypy_cache" },
     },
     git = { enable = true, ignore = false },
     actions = {
