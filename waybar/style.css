@@ -22,13 +22,16 @@ window#waybar {
 
 #mode { background: #E53935; padding: 0 8px; }
 
-#wireplumber, #memory, #network, #cpu, #battery, #clock, #tray {
+#wireplumber, #memory, #network, #bluetooth, #cpu, #battery, #clock, #tray {
     padding: 0 10px;
     border-left: 1px solid #757575;
 }
 
 #network          { color: #00FF00; }
+#bluetooth.connected { color: #64b5f6; }
 #network.disconnected,
+#bluetooth.off,
+#bluetooth.disabled,
 #wireplumber.muted { color: #676E7D; }
 #battery.warning  { color: #ffb74d; }
 #battery.critical { color: #E53935; }

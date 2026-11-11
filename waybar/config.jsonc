@@ -5,7 +5,7 @@
     "height": 26,
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": [],
-    "modules-right": ["wireplumber", "memory", "network", "cpu", "battery", "clock", "tray"],
+    "modules-right": ["wireplumber", "memory", "network", "bluetooth", "cpu", "battery", "clock", "tray"],
 
     "sway/mode": { "format": "{}" },
 
@@ -24,6 +24,18 @@
         "format-ethernet": "{ifname} {ipaddr}",
         "format-disconnected": "offline",
         "tooltip-format": "{ifname} {ipaddr}/{cidr} via {gwaddr}"
+    },
+    "bluetooth": {
+        "format": "\uf293 {status}",
+        "format-on": "\uf293",
+        "format-off": "\uf293 off",
+        "format-disabled": "\uf293 off",
+        "format-connected": "\uf293 {device_alias}",
+        "format-connected-battery": "\uf293 {device_alias} {device_battery_percentage}%",
+        "tooltip-format-connected": "{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+        "on-click": "blueman-manager",
+        "on-click-right": "sh -c 'bluetoothctl show | grep -q \"Powered: yes\" && bluetoothctl power off || bluetoothctl power on'"
     },
     "cpu": {
         "interval": 10,

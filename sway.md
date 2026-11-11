@@ -97,6 +97,7 @@ does the same area capture from a shell. `xclip` is aliased to `wl-copy`, so
 - **swayidle:** locks after 10 min idle, turns screens off after 15 min (any input turns
   them back on), and locks before suspend.
 - **nm-applet** sits in the waybar tray for Wi-Fi/network.
+- **blueman-applet** sits in the tray for Bluetooth (pairing, connect/disconnect).
 - `dbus-update-activation-environment` passes the Wayland session to portals
   (`xdg-desktop-portal-wlr`), so screen sharing and file pickers work.
 - `/etc/sway/config.d/*` (distro defaults) is included last.
@@ -106,7 +107,11 @@ does the same area capture from a shell. `xclip` is aliased to `wl-copy`, so
 Top bar, launched by sway via `bar { swaybar_command waybar }`.
 
 - **Left:** workspaces (clickable), current mode (e.g. `resize`).
-- **Right:** volume (click to mute), memory, network (SSID + IP), CPU, battery, clock,
+- **Right:** volume (click to mute), memory, network (SSID + IP), bluetooth, CPU, battery, clock,
   tray.
+- **Bluetooth module:** just the icon when on with nothing connected, shows the device name
+  (+ battery if reported) when connected, greyed `off` when powered down. Left-click
+  opens `blueman-manager`; right-click toggles power. If it shows off after a reboot,
+  the adapter is rfkill-blocked: `rfkill unblock bluetooth`.
 - Font is DejaVu Sans Mono with Font Awesome for icons (`fonts-font-awesome`).
 - After editing waybar files, `Mod+Shift+c` reloads sway, which restarts the bar.

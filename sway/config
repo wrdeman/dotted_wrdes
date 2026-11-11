@@ -198,6 +198,7 @@ exec swayidle -w \
         timeout 900 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
         before-sleep '$lock'
 exec nm-applet --indicator
+exec blueman-applet
 
 # Let portals (screen sharing, file pickers) and systemd user units see the session
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway SWAYSOCK

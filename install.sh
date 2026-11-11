@@ -149,7 +149,7 @@ install_packages_linux() {
         info "Graphical session detected — installing sway environment..."
         sudo apt-get install -y sway swaybg swayidle swaylock waybar fuzzel \
             grim slurp xwayland xdg-desktop-portal-wlr \
-            network-manager-gnome zathura \
+            network-manager-gnome blueman zathura \
             || warn "sway packages failed"
     else
         warn "No display detected — skipping sway/zathura install"
