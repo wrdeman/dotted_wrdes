@@ -86,6 +86,7 @@ install_packages_mac() {
         ruff                  # Python linter/LSP (Mason can't install it without pip)
         hashicorp/tap/terraform  # terraform CLI (homebrew-core dropped it after the 2023 BSL relicense)
         checkov               # terraform IaC security scanner (nvim-lint, see nvim-lint.lua)
+        gitleaks              # secret scanner, run as this repo's pre-commit hook (see hooks/pre-commit)
         # zathura and zathura-pdf-poppler available via brew if needed
         # meld available via: brew install --cask meld
     )
@@ -169,6 +170,7 @@ install_packages_linux() {
     install_lazygit_linux
     install_hurl_linux
     install_terraform_linux
+    install_gitleaks_linux
     install_gh_linux
     install_node_linux
     install_nerd_font_linux
@@ -445,6 +447,49 @@ install_terraform_linux() {
     rm -rf "$tmp"
 }
 
+# ── Gitleaks: Linux install from GitHub releases (secret scanner, run as this
+#    repo's pre-commit hook — see hooks/pre-commit and install_git_hooks) ─────
+
+install_gitleaks_linux() {
+    if has gitleaks; then
+        ok "Gitleaks already installed: $(gitleaks version)"
+        return
+    fi
+
+    info "Installing Gitleaks from GitHub releases..."
+    local gl_ver
+    gl_ver="$(curl -fsSL https://api.github.com/repos/gitleaks/gitleaks/releases/latest \
+        | grep '"tag_name"' | cut -d'"' -f4)"
+    if [ -z "$gl_ver" ]; then
+        warn "Could not resolve gitleaks version — skipping"
+        return
+    fi
+
+    # Assets are named without the leading 'v' in the version
+    local arch asset
+    case "$(uname -m)" in
+        x86_64)        arch="x64" ;;
+        aarch64|arm64) arch="arm64" ;;
+        *) warn "Unsupported arch for gitleaks: $(uname -m) — skipping"; return ;;
+    esac
+    asset="gitleaks_${gl_ver#v}_linux_${arch}.tar.gz"
+
+    local tmp
+    tmp="$(mktemp -d)"
+    if curl -fLo "$tmp/gitleaks.tar.gz" \
+        "https://github.com/gitleaks/gitleaks/releases/download/${gl_ver}/${asset}"; then
+        # Tarball is flat: LICENSE, README.md, gitleaks at top level.
+        tar xzf "$tmp/gitleaks.tar.gz" -C "$tmp" gitleaks
+        mkdir -p "$HOME/.local/bin"
+        mv "$tmp/gitleaks" "$HOME/.local/bin/gitleaks"
+        chmod +x "$HOME/.local/bin/gitleaks"
+        ok "Gitleaks ${gl_ver} installed to ~/.local/bin/gitleaks"
+    else
+        warn "Gitleaks download failed — install manually from github.com/gitleaks/gitleaks"
+    fi
+    rm -rf "$tmp"
+}
+
 # ── GitHub CLI: Linux install from GitHub releases (apt version lags badly) ───
 
 install_gh_linux() {
@@ -634,10 +679,23 @@ install_tmuxinator() {
     fi
 }
 
+# ── Git hooks for this repo (gitleaks secret scan) ────────────────────────────
+
+install_git_hooks() {
+    if ! git -C "$DOTFILES" rev-parse --git-dir &>/dev/null; then
+        warn "$DOTFILES is not a git repo — skipping pre-commit hook setup"
+        return
+    fi
+    git -C "$DOTFILES" config core.hooksPath hooks
+    ok "Pre-commit hook wired: hooks/pre-commit (gitleaks secret scan)"
+}
+
 # ── Dotfile symlinks ──────────────────────────────────────────────────────────
 
 install_links() {
     info "Creating dotfile symlinks..."
+
+    install_git_hooks
 
     # Home directory dotfiles (relative symlinks matching existing style)
     symlink "$DOTFILES/.aliases"   "$HOME/.aliases"

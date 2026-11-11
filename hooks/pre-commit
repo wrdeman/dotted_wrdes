@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Pre-commit secret scan via gitleaks. Wired in by install.sh
+# (git config core.hooksPath hooks) — see install_git_hooks in install.sh.
+set -euo pipefail
+
+if ! command -v gitleaks &>/dev/null; then
+    echo "pre-commit: gitleaks not installed — skipping secret scan (run ./install.sh)" >&2
+    exit 0
+fi
+
+if ! gitleaks protect --staged --redact -v; then
+    echo "pre-commit: gitleaks found a potential secret — commit blocked" >&2
+    exit 1
+fi
