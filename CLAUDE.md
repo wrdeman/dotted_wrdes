@@ -22,7 +22,7 @@ Neovim plugins auto-install on first launch via lazy.nvim; `:Lazy sync` to updat
 **`install.sh` is the hub.** It is idempotent and the single source of truth for both *what gets installed* and *what gets linked*. Two facts matter when editing anything here:
 
 - `install_links()` (≈line 294) is the authoritative symlink map. Adding a new dotfile means adding a `symlink "$DOTFILES/x" "$HOME/x"` line — the file existing in the repo does nothing on its own. `symlink()` backs up a pre-existing real file to `*.bak` before linking.
-- OS branching is by `uname -s` (`Darwin` vs `Linux`). macOS installs via Homebrew formulae; Linux installs via apt, plus Neovim from GitHub release tarball into `~/.local/bin` and Node via NodeSource. i3/compton/zathura links and the `~/.local/bin` PATH line are **Linux-only** — keep new desktop-environment config inside the `[[ "$OS" == "Linux" ]]` guards.
+- OS branching is by `uname -s` (`Darwin` vs `Linux`). macOS installs via Homebrew formulae; Linux installs via apt, plus Neovim from GitHub release tarball into `~/.local/bin` and Node via NodeSource. sway/waybar/zathura links (Wayland; sway replaced i3, which needed Xorg) and the `~/.local/bin` PATH line are **Linux-only** — keep new desktop-environment config inside the `[[ "$OS" == "Linux" ]]` guards.
 
 **Neovim config (`nvim/`) is modular Lua, loaded in order by `init.lua`:** `options` → `keymaps` → `plugins`.
 - `lua/plugins/init.lua` bootstraps lazy.nvim and is the plugin manifest. Each plugin's `config = function() require("plugins.X") end` points to its own file in `lua/plugins/`. Add a plugin = add a spec here (+ its config file if non-trivial).
@@ -37,6 +37,7 @@ Neovim plugins auto-install on first launch via lazy.nvim; `:Lazy sync` to updat
 - Keep changes cross-platform. If something is macOS- or Linux-only, gate it on `$OS` rather than assuming one platform.
 - `Readme.md` is a manual package/font checklist that predates `install.sh`; `install.sh` is the maintained path.
 - Topic docs sit alongside `nvim-tmux.md`: `nvim-sql.md` (dadbod/SQL workflow),
-  `nvim-octo.md` (octo.nvim GitHub review workflow). Update the matching one too when
-  changing that plugin's config.
+  `nvim-octo.md` (octo.nvim GitHub review workflow), `sway.md` (sway keybindings +
+  waybar). Update the matching one too when changing that plugin's or `sway/`/`waybar/`
+  config.
 - `nvim-tmux.md` documents the Neovim and tmux configs (keymaps, plugins, LSP, options). **Keep it in sync:** whenever you change `.tmux.conf` or anything under `nvim/` (a keymap, plugin, LSP server, option, or vimtex/telescope binding), update `nvim-tmux.md` in the same change.

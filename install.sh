@@ -130,7 +130,7 @@ install_packages_linux() {
         ripgrep               # for Telescope live_grep
         jq                    # JSON formatter for hurl.nvim responses
         ruby
-        xclip                 # clipboard support in neovim
+        wl-clipboard          # clipboard support in neovim (Wayland: wl-copy/wl-paste)
         xdg-utils             # xdg-open: markdown-preview.nvim opens the browser through it
         curl
         wget
@@ -142,14 +142,15 @@ install_packages_linux() {
     info "Installing apt packages..."
     sudo apt-get install -y "${pkgs[@]}" || warn "Some apt packages failed — continuing"
 
-    # i3 desktop (Linux-only)
+    # sway desktop (Linux-only, Wayland)
     if [[ "${DISPLAY:-}" != "" ]] || [[ "${WAYLAND_DISPLAY:-}" != "" ]]; then
-        info "Graphical session detected — installing i3 environment..."
-        sudo apt-get install -y i3 i3blocks i3lock xss-lock picom rofi feh scrot \
-            x11-xserver-utils network-manager-gnome zathura \
-            || warn "i3 packages failed"
+        info "Graphical session detected — installing sway environment..."
+        sudo apt-get install -y sway swaybg swayidle swaylock waybar fuzzel \
+            grim slurp xwayland xdg-desktop-portal-wlr \
+            network-manager-gnome zathura \
+            || warn "sway packages failed"
     else
-        warn "No display detected — skipping i3/zathura install"
+        warn "No display detected — skipping sway/zathura install"
     fi
 
     if $INSTALL_LATEX; then
@@ -633,8 +634,8 @@ install_links() {
 
     # Linux-only
     if [[ "$OS" == "Linux" ]]; then
-        symlink "$DOTFILES/i3/config"              "$HOME/.config/i3/config"
-        symlink "$DOTFILES/i3blocks/i3blocks.conf" "$HOME/.config/i3blocks/i3blocks.conf"
+        symlink "$DOTFILES/sway/config" "$HOME/.config/sway/config"
+        symlink "$DOTFILES/waybar"      "$HOME/.config/waybar"
     fi
 
     # Ensure ~/.local/bin is in PATH (Linux: nvim lives here)

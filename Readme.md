@@ -4,14 +4,22 @@ tmux
 zathura
 silversearcher-ag
 git
-xclip
+wl-clipboard
 zsh
 
-## i3 Requirements
-i3
-i3blocks
-compton
-rofi
+## sway Requirements (Wayland)
+sway
+swaybg
+swayidle
+swaylock
+waybar
+fuzzel
+grim
+slurp
+xwayland
+xdg-desktop-portal-wlr
+network-manager-gnome   # nm-applet tray icon
+wireplumber             # wpctl volume keys (default on PipeWire systems)
 
 ## Fonts
 fonts-font-awesome

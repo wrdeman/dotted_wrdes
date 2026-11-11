@@ -1,0 +1,44 @@
+// waybar config — see `man 5 waybar`. Launched by sway (bar { swaybar_command waybar }).
+{
+    "layer": "top",
+    "position": "top",
+    "height": 26,
+    "modules-left": ["sway/workspaces", "sway/mode"],
+    "modules-center": [],
+    "modules-right": ["wireplumber", "memory", "network", "cpu", "battery", "clock", "tray"],
+
+    "sway/mode": { "format": "{}" },
+
+    "wireplumber": {
+        "format": " {volume}%",
+        "format-muted": " muted",
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    },
+    "memory": {
+        "interval": 30,
+        "format": "MEM {used:0.1f}G"
+    },
+    "network": {
+        "interval": 10,
+        "format-wifi": " {essid} {ipaddr}",
+        "format-ethernet": "{ifname} {ipaddr}",
+        "format-disconnected": "offline",
+        "tooltip-format": "{ifname} {ipaddr}/{cidr} via {gwaddr}"
+    },
+    "cpu": {
+        "interval": 10,
+        "format": " {usage}%"
+    },
+    "battery": {
+        "interval": 30,
+        "states": { "warning": 20, "critical": 10 },
+        "format": "⚡ {capacity}%",
+        "format-charging": "⚡ {capacity}% +"
+    },
+    "clock": {
+        "interval": 1,
+        "format": " {:%Y-%m-%d %H:%M:%S}",
+        "tooltip-format": "<tt>{calendar}</tt>"
+    },
+    "tray": { "spacing": 8 }
+}

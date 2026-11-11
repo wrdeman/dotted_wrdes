@@ -47,6 +47,42 @@ instead of forwarding to tmux — don't use them here.
 | `C-z -` | un-zoom (restore pane, kill zoom window) |
 | `C-z M-1`..`M-5` | layout: even-horizontal, even-vertical, main-horizontal, main-vertical, tiled |
 
+### Everyday cheat sheet
+
+Sessions from the shell:
+
+```sh
+tmux new -s work          # start a session named "work"
+tmux ls                   # list sessions
+tmux a -t work            # reattach (or: agent <dir>, see below)
+tmux kill-session -t work
+```
+
+Common keys (tmux defaults unless noted; prefix is `C-z`):
+
+| Key | Action |
+|-----|--------|
+| `C-z c` | new window |
+| `C-z %` / `C-z "` | split side by side / top and bottom |
+| `C-z 1`..`9` | jump to window (numbered from 1) |
+| `C-z ,` | rename window (sticks — auto-rename is off) |
+| `C-z w` | pick a window/session from a tree |
+| `C-z s` | switch session |
+| `C-z z` | built-in zoom toggle for the current pane |
+| `C-z [` | copy mode — vi keys: `/` search, `v` select, `y` copy, `q` quit |
+| `C-z d` | detach (session keeps running) |
+| `C-z x` / `C-z &` | kill pane / window (asks first) |
+| `C-z :` | tmux command prompt |
+
+Mouse is on: click to focus a pane, drag borders to resize, scroll wheel enters scrollback.
+
+Typical flow: `agent ~/code/api` → `C-z %` to split → nvim on the left, shell on the right,
+`C-h`/`C-l` between them → `C-z c` for a second task window → `C-z d` and reattach later.
+
+**Gotcha:** `C-z` is the prefix, so it can't suspend a foreground job inside tmux, and
+`C-z C-z` goes to the last window rather than sending `C-z`. To suspend, start the job with
+`&`, or rebind `C-z C-z` to `send-prefix` (you lose last-window).
+
 ### Claude Code compatibility
 
 The block at the top enables `allow-passthrough` (desktop notifications + progress bar),

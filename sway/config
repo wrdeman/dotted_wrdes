@@ -1,14 +1,11 @@
-# i3 config file (v4)
-#
-# Please see https://i3wm.org/docs/userguide.html for a complete reference!
+# sway config — see `man 5 sway` (ported from the old i3 config)
 
 set $mod Mod4
 
-# Font for window titles. Will also be used by the bar unless a different font
-font pango:DejaVu Sans Mono, awesome 16
+# Font for window titles
+font pango:DejaVu Sans Mono 12
 
-# use these keys for focus, movement, and resize directions when reaching for
-# the arrows is not convenient
+# vim-style directions
 set $up k
 set $down j
 set $left h
@@ -31,22 +28,38 @@ client.urgent           $urgent-bg-color    $urgent-bg-color   $text-color      
 default_border          pixel 5
 default_floating_border pixel 5
 
+# ── Input / output ────────────────────────────────────────────────────────────
+# List devices with `swaymsg -t get_inputs` / `swaymsg -t get_outputs`.
+input type:keyboard {
+    xkb_layout gb
+}
+input type:touchpad {
+    tap enabled
+    natural_scroll enabled
+}
+# HiDPI example (replaces the old xrandr --scale lines):
+# output DP-1 scale 2
+
+# wallpaper: drop an image at ~/.wallpaper, else a solid colour
+output * bg $bg-color solid_color
+exec_always sh -c '[ -f ~/.wallpaper ] && swaymsg "output * bg ~/.wallpaper fill"'
+
 # Use Mouse+$mod to drag floating windows
-floating_modifier $mod
+floating_modifier $mod normal
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec x-terminal-emulator
 
 # kill focused window
 bindsym $mod+Shift+q kill
 
-# launcher: apps (drun) / any command on $PATH (run)
-set $rofi rofi -theme Arc-Dark -theme-str 'window {width: 50%;} listview {lines: 5;}' -font "DejaVu Sans Mono 12"
-bindsym $mod+d       exec --no-startup-id $rofi -show drun -show-icons
-bindsym $mod+Shift+d exec --no-startup-id $rofi -show run
+# launcher: apps (fuzzel lists .desktop entries; Shift = run any command on $PATH)
+bindsym $mod+d       exec fuzzel
+bindsym $mod+Shift+d exec fuzzel --list-executables-in-path
 
-# lock screen (also locks automatically on suspend via xss-lock below)
-bindsym Control+Mod1+l exec --no-startup-id loginctl lock-session
+# lock screen
+set $lock swaylock -f -c 000000
+bindsym Control+Mod1+l exec $lock
 
 # change focus
 bindsym $mod+$left  focus left
@@ -87,7 +100,6 @@ bindsym $mod+a focus parent
 bindsym $mod+Shift+minus move scratchpad
 
 # Show the next scratchpad window or hide the focused scratchpad window.
-# If there are multiple scratchpad windows, this command cycles through them.
 bindsym $mod+minus scratchpad show
 
 # switch to workspace
@@ -118,22 +130,19 @@ bindsym $mod+Shift+0 move container to workspace number 10
 bindsym $mod+Shift+greater move container to output right
 bindsym $mod+Shift+less    move container to output left
 
-# gimp
-assign [class="Gimp"] gimp
-for_window [title="GIMP Startup"] move workspace gimp
-for_window [window_role="gimp-toolbox"] floating disable; layout stacking; move left; resize shrink right 31px or 31 ppt
+# gimp (GIMP 3 is a native Wayland app: match app_id)
+assign [app_id="gimp"] gimp
 
-# dialogs and pop-ups float
+# dialogs and pop-ups float (native Wayland dialogs float automatically;
+# these rules cover XWayland apps)
 for_window [window_role="pop-up"]       floating enable
 for_window [window_role="task_dialog"]  floating enable
 for_window [window_type="dialog"]       floating enable
 
-# reload the configuration file
+# reload the configuration file (sway has no in-place restart; reload is enough)
 bindsym $mod+Shift+c reload
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+Shift+r restart
-# exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+# exit sway
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway? This ends your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -156,46 +165,41 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
+# Status bar: waybar (config in ~/.config/waybar)
 bar {
-        status_command i3blocks -c ~/.config/i3blocks/i3blocks.conf
-        position top
-        tray_output primary
-        colors {
-            background $bg-color
-            separator  #757575
-            # border             background         text
-            focused_workspace  $bg-color          $bg-color          $text-color
-            inactive_workspace $inactive-bg-color $inactive-bg-color $inactive-text-color
-            urgent_workspace   $urgent-bg-color   $urgent-bg-color   $text-color
-       }
+        swaybar_command waybar
 }
 
-# Volume (PipeWire via wpctl); signal 10 refreshes the i3blocks volume block
+# Volume (PipeWire via wpctl); waybar's wireplumber module updates itself
 set $sink @DEFAULT_AUDIO_SINK@
-set $refresh_vol pkill -RTMIN+10 i3blocks
-bindsym $mod+Control+Left    exec --no-startup-id wpctl set-volume $sink 5%- && $refresh_vol
-bindsym $mod+Control+Right   exec --no-startup-id wpctl set-volume -l 1.0 $sink 5%+ && $refresh_vol
-bindsym $mod+Control+Up      exec --no-startup-id wpctl set-volume -l 1.0 $sink 5%+ && $refresh_vol
-bindsym $mod+Control+Down    exec --no-startup-id wpctl set-mute $sink toggle && $refresh_vol
-bindsym XF86AudioLowerVolume exec --no-startup-id wpctl set-volume $sink 5%- && $refresh_vol
-bindsym XF86AudioRaiseVolume exec --no-startup-id wpctl set-volume -l 1.0 $sink 5%+ && $refresh_vol
-bindsym XF86AudioMute        exec --no-startup-id wpctl set-mute $sink toggle && $refresh_vol
-bindsym XF86AudioMicMute     exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+bindsym $mod+Control+Left    exec wpctl set-volume $sink 5%-
+bindsym $mod+Control+Right   exec wpctl set-volume -l 1.0 $sink 5%+
+bindsym $mod+Control+Up      exec wpctl set-volume -l 1.0 $sink 5%+
+bindsym $mod+Control+Down    exec wpctl set-mute $sink toggle
+bindsym --locked XF86AudioLowerVolume exec wpctl set-volume $sink 5%-
+bindsym --locked XF86AudioRaiseVolume exec wpctl set-volume -l 1.0 $sink 5%+
+bindsym --locked XF86AudioMute        exec wpctl set-mute $sink toggle
+bindsym --locked XF86AudioMicMute     exec wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
 # Lazy shortcuts
 bindsym $mod+c       exec google-chrome
 bindsym $mod+i       exec firefox
 bindsym $mod+Shift+s exec spotify
 
-# Screenshots → ~/Pictures ($mod+Print: select a region/window, Ctrl+Print: whole screen)
-bindsym --release $mod+Print exec --no-startup-id scrot -s '%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures && mv $f ~/Pictures/'
-bindsym Ctrl+Print           exec --no-startup-id scrot '%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures && mv $f ~/Pictures/'
+# Screenshots → ~/Pictures ($mod+Print: select a region, Ctrl+Print: whole screen)
+set $shot mkdir -p ~/Pictures && grim
+bindsym $mod+Print exec $shot -g "$(slurp)" ~/Pictures/$(date +%Y%m%d_%H%M%S).png
+bindsym Ctrl+Print exec $shot ~/Pictures/$(date +%Y%m%d_%H%M%S).png
 
 # Autostart
-exec_always --no-startup-id "pkill -x picom; picom -b"
-# wallpaper: drop an image at ~/.wallpaper, else fall back to a solid colour
-exec_always --no-startup-id sh -c 'feh --no-fehbg --bg-fill ~/.wallpaper 2>/dev/null || xsetroot -solid "#2f343f"'
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork -c 000000
-exec --no-startup-id nm-applet
-# exec --no-startup-id xrandr --output DP-1-2 --scale 2x2 --pos 3200x0 --panning 3840x2160+3200+0
-# exec --no-startup-id xrandr --output DP-1-1 --scale 2x2 --pos 3200x0 --panning 3840x2160+3200+0
+# lock after 10 min idle, blank screens after 15, and lock before suspend
+exec swayidle -w \
+        timeout 600 '$lock' \
+        timeout 900 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+        before-sleep '$lock'
+exec nm-applet --indicator
+
+# Let portals (screen sharing, file pickers) and systemd user units see the session
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway SWAYSOCK
+
+include /etc/sway/config.d/*

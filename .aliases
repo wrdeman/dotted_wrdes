@@ -6,9 +6,9 @@ alias cleantex="rm *.bbl *.aux *.blg *.log *.out *.*~"
 
 alias cboot="dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p' | xargs sudo apt-get -y purge"
 alias sos="pacmd set-card-profile 0 output:analog-stereo"
-alias pss="gnome-screenshot -a"
+alias pss='grim -g "$(slurp)" ~/Pictures/$(date +%Y%m%d_%H%M%S).png'
 alias svim="sudo vim"
-alias xclip="xclip -selection c"
+alias xclip="wl-copy"   # muscle memory: pipe to the Wayland clipboard
 
 ######################################################################
 
