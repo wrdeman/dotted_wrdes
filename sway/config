@@ -141,8 +141,11 @@ for_window [window_type="dialog"]       floating enable
 
 # reload the configuration file (sway has no in-place restart; reload is enough)
 bindsym $mod+Shift+c reload
-# exit sway
-bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway? This ends your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+# power menu: exit sway / reboot / shut down (Esc or the X dismisses it)
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Power' \
+    -B 'Exit sway' 'swaymsg exit' \
+    -B 'Reboot' 'systemctl reboot' \
+    -B 'Shut down' 'systemctl poweroff'
 
 # resize window (you can also use the mouse for that)
 mode "resize" {

@@ -32,7 +32,7 @@ Start it from a TTY with `sway`, or pick **Sway** at the login screen.
 | `Mod+Shift+q` | close focused window |
 | `Ctrl+Alt+l` | lock screen (swaylock) |
 | `Mod+Shift+c` | reload config (sway has no in-place restart; reload is enough) |
-| `Mod+Shift+e` | exit sway (asks first) |
+| `Mod+Shift+e` | power menu (swaynag): exit sway / reboot / shut down |
 
 ### Focus, moving & layout
 
