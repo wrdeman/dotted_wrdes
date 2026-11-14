@@ -115,10 +115,12 @@ export EDITOR=nvim
 export VISUAL=nvim
 
 # direnv (per-project .envrc support)
-eval "$(direnv hook zsh)"
+(( $+commands[direnv] )) && eval "$(direnv hook zsh)"
 
 # Machine/company-specific aliases — not tracked by this repo.
-[[ -f ~/.okko_aliases ]] && source ~/.okko_aliases
+# Sources any ~/.<name>_aliases (e.g. ~/.work_aliases); ~/.aliases is sourced above.
+# (N-.) = no error if none match, regular files or symlinks to them only.
+for f in ~/.*_aliases(N-.); do source "$f"; done; unset f
 
 # ---- shared helpers ------------------------------------------------------
 

@@ -78,6 +78,7 @@ install_packages_mac() {
         lazygit               # git TUI (lazygit.nvim)
         gh                    # GitHub CLI (octo.nvim talks to GitHub through it)
         ripgrep               # for Telescope live_grep
+        direnv                # per-project .envrc (hooked in .zshrc)
         hurl                  # HTTP client (hurl.nvim)
         jq                    # JSON formatter for hurl.nvim responses
         ruby
@@ -130,6 +131,7 @@ install_packages_linux() {
         silversearcher-ag
         tig
         ripgrep               # for Telescope live_grep
+        direnv                # per-project .envrc (hooked in .zshrc)
         jq                    # JSON formatter for hurl.nvim responses
         ruby
         wl-clipboard          # clipboard support in neovim (Wayland: wl-copy/wl-paste)
