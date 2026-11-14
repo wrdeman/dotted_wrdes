@@ -141,3 +141,7 @@ alias ctop='TERM=xterm-256color ctop'
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# >>> railway initialize >>>
+[[ -f "$HOME/.railway/env" ]] && source "$HOME/.railway/env"
+# <<< railway initialize <<<
