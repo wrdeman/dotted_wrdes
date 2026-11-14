@@ -25,7 +25,7 @@ Start it from a TTY with `sway`, or pick **Sway** at the login screen.
 
 | Key | Action |
 |-----|--------|
-| `Mod+Enter` | terminal (`x-terminal-emulator`) |
+| `Mod+Enter` | new terminal window (`ptyxis --new-window`, else `x-terminal-emulator`) |
 | `Mod+d` | fuzzel app launcher |
 | `Mod+Shift+d` | fuzzel: run any program on `$PATH` |
 | `Mod+c` / `Mod+i` / `Mod+Shift+s` | Chrome / Firefox / Spotify |

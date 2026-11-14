@@ -48,7 +48,8 @@ exec_always sh -c '[ -f ~/.wallpaper ] && swaymsg "output * bg ~/.wallpaper fill
 floating_modifier $mod normal
 
 # start a terminal
-bindsym $mod+Return exec x-terminal-emulator
+# ptyxis is single-instance: without --new-window it just focuses the existing window
+bindsym $mod+Return exec sh -c 'command -v ptyxis >/dev/null && exec ptyxis --new-window || exec x-terminal-emulator'
 
 # kill focused window
 bindsym $mod+Shift+q kill
